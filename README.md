@@ -92,4 +92,4 @@ This was never developed into a functioning product or library. For unit testing
 
 ### Version History
 
-1.0.0   Inital Release
+1.0.0   Inital Release (to Nuget)
