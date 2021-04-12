@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RazorLangVersion>3.0</RazorLangVersion>
+    <Description>This library shows sample .razor templates and related code, used in the unit test library</Description>
+    <Authors>conficient</Authors>
+    <Company>conficient</Company>
+    <Product>BlazorTemplater</Product>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.14" />
+  </ItemGroup>
+
+</Project>

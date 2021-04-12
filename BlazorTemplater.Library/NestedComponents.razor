@@ -1,0 +1,8 @@
+﻿@* simple component, no parameters *@
+<Simple />
+@* pass parameter to component *@
+<Parameters Model="@Model" />
+@code
+{
+    [Parameter] public TestModel Model { get; set; }
+}

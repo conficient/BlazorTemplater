@@ -1,0 +1,12 @@
+﻿@if (Model != null)
+{
+    <p>@Model.Name @Model.Description!</p>
+}
+else
+{
+    <p>No model!</p>
+}
+@code
+{
+    [Parameter] public TestModel Model { get; set; }
+}

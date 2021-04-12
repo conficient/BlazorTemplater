@@ -1,0 +1,7 @@
+﻿@inject ITestService testService;
+<p>If you add @A and @B you get @testService.Add(A,B)</p>
+@code
+{
+    [Parameter] public int A { get; set; }
+    [Parameter] public int B { get; set; }
+}
