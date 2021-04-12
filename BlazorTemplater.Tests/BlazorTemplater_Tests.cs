@@ -177,7 +177,8 @@ namespace BlazorTemplater.Tests
         {
             // expected output
             // the spaces before the <p> come from the Parameters.razor component
-            const string expected = "<b>Jan 1st is 2021-01-01</b>\r\n    <p>Dan Roth is cool!</p>";
+            // on Windows the string contains \r\n and on unix it's just \n
+            string expected = $"<b>Jan 1st is 2021-01-01</b>{Environment.NewLine}    <p>Dan Roth is cool!</p>";
 
             var renderer = new BlazorTemplater();
             var model = new TestModel()
