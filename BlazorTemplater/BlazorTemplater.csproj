@@ -9,7 +9,6 @@
     <PackageProjectUrl>https://github.com/conficient/BlazorTemplater</PackageProjectUrl>
     <RepositoryUrl>https://github.com/conficient/BlazorTemplater</RepositoryUrl>
     <PackageTags>Blazor RazorComponents HTML Email Templating</PackageTags>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Version>1.0.0</Version>
     <PackageReleaseNotes>Initial Version</PackageReleaseNotes>
   </PropertyGroup>
