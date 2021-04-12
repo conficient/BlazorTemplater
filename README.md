@@ -1,6 +1,8 @@
 # BlazorTemplater
 A library that generates HTML (e.g. for emails) from [Razor Components](https://docs.microsoft.com/en-us/aspnet/core/blazor/components).
 
+[![Build](https://github.com/conficient/BlazorTemplater/actions/workflows/dotnet-core.yml/badge.svg)](https://github.com/conficient/BlazorTemplater/actions/workflows/dotnet-core.yml)
+
 #### Examples
 Using the library is simple:
 ```c#
