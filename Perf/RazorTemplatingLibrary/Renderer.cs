@@ -10,9 +10,9 @@ namespace RazorTemplatingLibrary
 {
     public static class Renderer
     {
-        public static async Task<string> RenderOrderAsync(OrderModel order)
+        public static async Task<string> RenderOrderAsync(Invoice model)
         {
-            return await RazorTemplateEngine.RenderAsync("~/OrderView.cshtml", order);
+            return await RazorTemplateEngine.RenderAsync("~/Invoice.cshtml", model);
         }
 
     }

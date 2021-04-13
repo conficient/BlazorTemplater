@@ -16,10 +16,7 @@ namespace NetCore31Tests
         [TestMethod]
         public async Task Single_Run()
         {
-            var rand = new Random();
-            const int rows = 1000;
-
-            var order = OrderModel.CreateModel(name, rand, rows);
+            var order = Invoice.Create();
 
             // Start timing
             var sw = Stopwatch.StartNew();
@@ -37,18 +34,14 @@ namespace NetCore31Tests
         public async Task Repeated_Runs()
         {
             const int runs = 100;
-
-            var rand = new Random();
-            const int rows = 1000;
-
-            var order = OrderModel.CreateModel(name, rand, rows);
+            var invoice = Invoice.Create();
 
             // Start timing
             var sw = Stopwatch.StartNew();
 
             for (int i = 0; i < runs; i++)
             {
-                _ = await RazorTemplatingLibrary.Renderer.RenderOrderAsync(order);
+                _ = await RazorTemplatingLibrary.Renderer.RenderOrderAsync(invoice);
             }
 
             // Stop timing

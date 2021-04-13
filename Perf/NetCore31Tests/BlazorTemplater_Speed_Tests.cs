@@ -15,10 +15,7 @@ namespace NetCore31Tests
         [TestMethod]
         public void Single_Run()
         {
-            var rand = new Random();
-            const int rows = 1000;
-
-            var order = OrderModel.CreateModel(name, rand, rows);
+            var invoice = Invoice.Create();
 
             // Start timing
             var sw = Stopwatch.StartNew();
@@ -26,9 +23,9 @@ namespace NetCore31Tests
             var templater = new BlazorTemplater.Templater();
             var parameters = new Dictionary<string, object>()
             {
-                { nameof(RazorComponentLibrary.OrderView.Order), order }
+                { nameof(RazorComponentLibrary.Invoice.Model), invoice }
             };
-            var html = templater.RenderComponent<RazorComponentLibrary.OrderView>(parameters);
+            var html = templater.RenderComponent<RazorComponentLibrary.Invoice>(parameters);
 
             // Stop timing
             sw.Stop();
@@ -42,11 +39,7 @@ namespace NetCore31Tests
         public void Repeated_Runs()
         {
             const int runs = 100;
-
-            var rand = new Random();
-            const int rows = 1000;
-
-            var order = OrderModel.CreateModel(name, rand, rows);
+            var invoice = Invoice.Create();
 
             // Start timing
             var sw = Stopwatch.StartNew();
@@ -55,12 +48,12 @@ namespace NetCore31Tests
             var templater = new BlazorTemplater.Templater();
             var parameters = new Dictionary<string, object>()
                 {
-                    { nameof(RazorComponentLibrary.OrderView.Order), order }
+                    { nameof(RazorComponentLibrary.Invoice.Model), invoice }
                 };
 
             for (int i = 0; i < runs; i++)
             {
-                _ = templater.RenderComponent<RazorComponentLibrary.OrderView>(parameters);
+                _ = templater.RenderComponent<RazorComponentLibrary.Invoice>(parameters);
             }
 
             // Stop timing

@@ -3,23 +3,23 @@
 
 ## Speed Tests
 
-Single run (no caching for Razor engines)
+BenchmarkDotNet runs
 
-| Library          |  Time |
-|------------------|------:|
-| BlazorTemplater  |  96ms |
-| RazorLight       |   xxx |
-| RazorEngine      |   xxx |
-| RazorTemplating  |   xxx |
+### Summary .NET Core 3.1
 
-Repeated runs (100 iterations). Caching is used if supported.
+BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.867 (2004/?/20H1)
+AMD Ryzen 7 1700, 1 CPU, 16 logical and 8 physical cores
+.NET Core SDK=6.0.100-preview.3.21202.5
+  [Host]     : .NET Core 3.1.13 (CoreCLR 4.700.21.11102, CoreFX 4.700.21.11602), X64 RyuJIT
+  DefaultJob : .NET Core 3.1.13 (CoreCLR 4.700.21.11102, CoreFX 4.700.21.11602), X64 RyuJIT
 
-| Library          |   Time |
-|------------------|-------:|
-| BlazorTemplater  | 1234ms |
-| RazorLight       |    xxx |
-| RazorEngine      |    xxx |
-| RazorTemplating  |    xxx |
+
+|               Method |     Mean |     Error |    StdDev |   Median |      Min |       Max |   Gen 0 |  Gen 1 |  Gen 2 | Allocated |
+|--------------------- |---------:|----------:|----------:|---------:|---------:|----------:|--------:|-------:|-------:|----------:|
+| Test_BlazorTemplater | 97.10 us | 19.071 us | 53.476 us | 68.95 us | 64.58 us | 260.29 us |  9.5215 | 3.7842 | 0.1221 |  57.54 KB |
+| Test_RazorTemplating | 50.75 us |  0.866 us |  0.768 us | 50.95 us | 49.02 us |  51.91 us | 10.1318 |      - |      - |  41.65 KB |
+
+
 
 Library versions used:
  - BlazorTemplater: v1.1.1
