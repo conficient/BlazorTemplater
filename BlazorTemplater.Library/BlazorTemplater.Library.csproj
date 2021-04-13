@@ -9,7 +9,6 @@
     <Product>BlazorTemplater</Product>
   </PropertyGroup>
 
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.14" />

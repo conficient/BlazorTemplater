@@ -18,9 +18,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B0E3EF40-CE74-4196-993F-D65E256F52FB}"
 	ProjectSection(SolutionItems) = preProject
 		Docs\AddRazorSupport.md = Docs\AddRazorSupport.md
+		Docs\Usage.md = Docs\Usage.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTemplater.ConsoleApp", "BlazorTemplater.ConsoleApp\BlazorTemplater.ConsoleApp.csproj", "{B1C3C891-8000-4AAB-AEAA-1902EDF6D3B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTemplater.ConsoleApp", "BlazorTemplater.ConsoleApp\BlazorTemplater.ConsoleApp.csproj", "{B1C3C891-8000-4AAB-AEAA-1902EDF6D3B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
