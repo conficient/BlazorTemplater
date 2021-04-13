@@ -26,12 +26,14 @@ namespace RazorLightLibrary
         readonly RazorLightEngine engine;
         readonly Dictionary<string, string> templateCache = new Dictionary<string, string>();
 
-        public async Task<string> RenderTemplateAsync<TModel>(string resourceName, TModel model)
+        public async Task<string> RenderTemplateAsync<TModel>(TModel model)
         {
+            // template name
+            const string resourceName = "RazorLightLibrary.OrderView.cshtml";
+
             string template;
             if (!templateCache.ContainsKey(resourceName))
             {
-
                 var stream = assembly.GetManifestResourceStream(resourceName);
                 if (stream == null)
                     throw new ArgumentException(resourceName + " not found");

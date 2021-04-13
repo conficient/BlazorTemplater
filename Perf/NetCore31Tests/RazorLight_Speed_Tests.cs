@@ -1,20 +1,24 @@
 using DataModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RazorLight;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace NetCore31Tests
 {
     [TestClass]
-    public class BlazorTemplaterSpeed_Tests
+    public class RazorLight_Speed_Tests
     {
         // name
-        const string name = "BlazorTemplater .NET Core 3.1";
+        const string name = "RazorLight .NET Core 3.1";
 
         [TestMethod]
-        public void Single_Run()
+        public async Task Single_Run()
         {
+          
             var rand = new Random();
             const int rows = 1000;
 
@@ -23,12 +27,8 @@ namespace NetCore31Tests
             // Start timing
             var sw = Stopwatch.StartNew();
 
-            var templater = new BlazorTemplater.Templater();
-            var parameters = new Dictionary<string, object>()
-            {
-                { nameof(RazorComponentLibrary.OrderView.Order), order }
-            };
-            var html = templater.RenderComponent<RazorComponentLibrary.OrderView>(parameters);
+            var renderer = new RazorLightLibrary.Renderer();
+            var html = await renderer.RenderTemplateAsync<OrderModel>(order);
 
             // Stop timing
             sw.Stop();
@@ -39,7 +39,7 @@ namespace NetCore31Tests
 
 
         [TestMethod]
-        public void Repeated_Runs()
+        public async Task Repeated_RunsAsync()
         {
             const int runs = 100;
 
@@ -52,15 +52,11 @@ namespace NetCore31Tests
             var sw = Stopwatch.StartNew();
 
             // reuse same templater for each run
-            var templater = new BlazorTemplater.Templater();
+            var renderer = new RazorLightLibrary.Renderer();
 
             for (int i = 0; i < runs; i++)
             {
-                var parameters = new Dictionary<string, object>()
-                {
-                    { nameof(RazorComponentLibrary.OrderView.Order), order }
-                };  
-                _ = templater.RenderComponent<RazorComponentLibrary.OrderView>(parameters);
+                _ = await renderer.RenderTemplateAsync<OrderModel>(order);
             }
 
             // Stop timing

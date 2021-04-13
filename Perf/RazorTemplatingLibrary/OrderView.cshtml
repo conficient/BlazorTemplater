@@ -1,0 +1,73 @@
+﻿@model DataModel.OrderModel
+<div>
+    <h1>Order for @Model.Name</h1>
+    <div>
+        <b>Delivery Address</b>
+        @* with Razor we can re-use *@
+        @if (Model.DeliveryAddress != null)
+        {
+            <div>
+                @if (Model.DeliveryAddress.Line1 != null)
+                {
+                    <span>@Model.DeliveryAddress.Line1</span><br />
+                }
+                @if (Model.DeliveryAddress.Line2 != null)
+                {
+                    <span>@Model.DeliveryAddress.Line2</span><br />
+                }
+                @if (Model.DeliveryAddress.Line3 != null)
+                {
+                    <span>@Model.DeliveryAddress.Line3</span><br />
+                }
+                <span>@Model.DeliveryAddress.Town</span><br />
+                <span>@Model.DeliveryAddress.Postcode</span>
+            </div>
+        }
+        else
+        {
+            <div>
+                <b>No Address Specified - Collection Only</b>
+            </div>
+        }
+        @*<AddressView Address="Order.DeliveryAddress" />*@
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Code</th>
+                <th>Unit</th>
+                <th>Qty</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.Rows)
+            {
+                <tr>
+                    <td>@row.Item</td>
+                    <td>@row.Code</td>
+                    <td style="text-align: right">@row.UnitPrice.ToString("c")</td>
+                    <td style="text-align: right">@row.Quantity.ToString("n0")</td>
+                    <td style="text-align: right">@row.Total.ToString("c")</td>
+                </tr>
+            }
+            <tr>
+                <td colspan="4">@(Model.TaxRate.HasValue ? "Subtotal" :"Total")</td>
+                <td style="text-align: right">@Model.SubTotal.ToString("c")</td>
+            </tr>
+            @* show tax rows if TaxRate is set *@
+            @if (Model.TaxRate.HasValue)
+            {
+                <tr>
+                    <td colspan="4">Tax Rate</td>
+                    <td style="text-align: right">@Model.TaxRate.Value.ToString("p1")</td>
+                </tr>
+                <tr>
+                    <td colspan="4">Total</td>
+                    <td style="text-align: right">@Model.Total.ToString("c")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

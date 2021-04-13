@@ -22,7 +22,7 @@ namespace DataModel
             return new Row()
             {
                 Item = $"Item {x:0000}",
-                Code = $"SKU{r.Next(0, 1000000):00000000)}",
+                Code = $"SKU{r.Next(0, 1000000):00000000}",
                 Quantity = r.Next(0, 50),
                 UnitPrice = Convert.ToDecimal(r.NextDouble() * 100 + 1)
             };

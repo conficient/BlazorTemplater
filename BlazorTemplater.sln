@@ -42,6 +42,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorComponentLibrary", "Pe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore31Tests", "Perf\NetCore31Tests\NetCore31Tests.csproj", "{BC1909DE-D8BF-42DD-9C6B-56244C815EF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorTemplatingLibrary", "Perf\RazorTemplatingLibrary\RazorTemplatingLibrary.csproj", "{5A076B70-50C7-4306-97A9-05FB5B7211C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -148,6 +150,18 @@ Global
 		{BC1909DE-D8BF-42DD-9C6B-56244C815EF7}.Release|x64.Build.0 = Release|Any CPU
 		{BC1909DE-D8BF-42DD-9C6B-56244C815EF7}.Release|x86.ActiveCfg = Release|Any CPU
 		{BC1909DE-D8BF-42DD-9C6B-56244C815EF7}.Release|x86.Build.0 = Release|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Debug|x64.Build.0 = Debug|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Debug|x86.Build.0 = Debug|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Release|x64.ActiveCfg = Release|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Release|x64.Build.0 = Release|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Release|x86.ActiveCfg = Release|Any CPU
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,6 +172,7 @@ Global
 		{1070A8D0-69BC-4EE8-A86F-AA188E46F22E} = {888D782D-D1A3-41D9-BFAD-32FC90993772}
 		{80D3F159-8D8B-473E-A747-75DBB9972376} = {888D782D-D1A3-41D9-BFAD-32FC90993772}
 		{BC1909DE-D8BF-42DD-9C6B-56244C815EF7} = {888D782D-D1A3-41D9-BFAD-32FC90993772}
+		{5A076B70-50C7-4306-97A9-05FB5B7211C8} = {888D782D-D1A3-41D9-BFAD-32FC90993772}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0BE01B9B-9B2C-4D66-AF7B-267535A5D00E}
