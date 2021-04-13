@@ -23,6 +23,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B0E3EF40-C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorTemplater.ConsoleApp", "BlazorTemplater.ConsoleApp\BlazorTemplater.ConsoleApp.csproj", "{B1C3C891-8000-4AAB-AEAA-1902EDF6D3B0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{B8C750B3-D263-4450-84C8-EB1A54F12BA5}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet-core-pr.yml = .github\workflows\dotnet-core-pr.yml
+		.github\workflows\dotnet-core.yml = .github\workflows\dotnet-core.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
