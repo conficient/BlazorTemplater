@@ -6,8 +6,8 @@ A library that generates HTML (e.g. for emails) from [Razor Components](https://
 #### Examples
 Using the library is simple:
 ```c#
-var renderer = new BlazorTemplater();
-var html = renderer.RenderComponent<MyComponent>();
+var templater = new Templater();
+var html = templater.RenderComponent<MyComponent>();
 ```
 This renders the `MyComponent` component as HTML.
 
@@ -15,13 +15,13 @@ This renders the `MyComponent` component as HTML.
 
 You can also set parameters on a component, e.g.
 ```c#
-var renderer = new BlazorTemplater();
+var templater = new Templater();
 var myModel = new Model() { Value = "test" };
 var parameters = new Dictionary<string, object>()
     {
         { nameof(MyComponent.Model), myModel }
     };
-var html = renderer.RenderComponent<MyComponent>(parameters);
+var html = templater.RenderComponent<MyComponent>(parameters);
 ```
 The dictionary is used to pass parameter values the component by name. Using `nameof()` 
 instead of hard-coding a string is recommended to avoid code changes causing errors.
@@ -30,14 +30,20 @@ instead of hard-coding a string is recommended to avoid code changes causing err
 
 You can also use dependency injection:
 ```c#
-var renderer = new BlazorTemplater();
-renderer.AddService<ITestService>(new TestService());
-var html = renderer.RenderComponent<MyComponent>();
+var templater = new Templater();
+templater.AddService<ITestService>(new TestService());
+var html = templater.RenderComponent<MyComponent>();
 ```
 
 ## Getting Started
 
 Add the `BlazorTemplater` NUGET package to your library.
+
+### Usage
+
+Create an instance of the `Templater` class, and use `.RenderComponent<TComponent>()` to create the HTML.
+
+See the [Usage](Docs/usage) page for more detailed usage guidance.
 
 ### Supported Project Types
 
@@ -48,13 +54,7 @@ Add the `BlazorTemplater` NUGET package to your library.
  - .NET 5 
  - .NET 6
 
-Libraries or applications using `BlazorTemplator` need to have the **Razor SDK** enabled to provide compilation and intellisense for `.razor` files. If you have an existing .NET Standard class library that does not have Razor Component support, follow [this guide](Docs/AddRazorSupport) to upgrade the library. I did have issues retrofitting Razor support into the .NET Core 3.1 unit test app, so I moved the `.razor` classes into a .NET Standard library `BlazorTemplater.Library`. This should not be an issue for a Blazor WASM or Blazor Server application using .NET Core 3.1 since they already support.
-
-### Usage
-
-Create an instance of the `BlazorTemplater` class. This instance can be reused multiple times provided the services to be injected are the same.
-
-To render a component which does not need any parameters set, use the `.RenderComponent<TComponent>()` method, where `TComponent` is the type generated for the Razor Component.
+Libraries or applications using `BlazorTemplator` need to have the **Razor SDK** enabled to provide compilation and intellisense for `.razor` files. If you have an existing .NET Standard class library that does not have Razor Component support, follow [this guide](Docs/AddRazorSupport) to upgrade the library. I did have issues retrofitting Razor support into the .NET Core 3.1 unit test app, so I moved the `.razor` classes into a .NET Standard library `Templater.Library`. This should not be an issue for a Blazor WASM or Blazor Server application using .NET Core 3.1 since they already support.
 
 ## Background
 
@@ -77,12 +77,20 @@ BlazorRenderer supports using:
  - Setting `[Parameters]` on Components
  - Injecting service sependencies via `.AddService<..>`
  - Nested Components
+ - [Code-behind Components](https://docs.microsoft.com/en-us/aspnet/core/blazor/components/?view=aspnetcore-5.0#partial-class-support)
  
 ### Limitations
 
 The following are not supported/tested:
    - EventCallbacks
    - Rerendering
+   - CSS and CSS isolation
+
+#### CSS and Html Emails
+
+CSS support in HTML emails is a complicated area. Many email clients (Outlook, GMail, Hotmail etc) have differing levels of what is supported. You can't often reference an external CSS file from the email as external references are often blocked.
+
+A good idea is to use a utility library to pre-process and inline the CSS before creating the email body. A good example of this is [PreMailer.NET](https://github.com/milkshakesoftware/PreMailer.Net).
 
 ## Credits and Acknowledgements
 
@@ -92,4 +100,8 @@ This was never developed into a functioning product or library. For unit testing
 
 ### Version History
 
-1.0.0   Inital Release (to Nuget)
+| Version  | Changes |
+| -------- |-----------|
+| v1.0.0   | Inital Release (to Nuget) |
+| v1.1.0   | **Breaking change**: renamed `BlazorTemplater` class to `Templater` [#4](https://github.com/conficient/BlazorTemplater/issues/4) |
+
