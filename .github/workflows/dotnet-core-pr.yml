@@ -1,7 +1,7 @@
-name: .NET Core build pack and push
+name: .NET Core build+test for pull requests
 
 on:
-  push:
+  pull_request:
     branches: [ main ]
 
 jobs:
@@ -21,8 +21,3 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal
-    - name: Publish  
-      uses: brandedoutcast/publish-nuget@v2.5.2  
-      with: 
-        PROJECT_FILE_PATH: BlazorTemplater/BlazorTemplater.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}} 
