@@ -8,14 +8,14 @@ using System.Collections.Generic;
 namespace BlazorTemplater
 {
     /// <summary>
-    /// Rendering 'host' that supports service injection
+    /// Templating host that supports service injection and rendering
     /// </summary>
-    public class BlazorTemplater
+    public class Templater
     {
         /// <summary>
         /// Ctor
         /// </summary>
-        public BlazorTemplater()
+        public Templater()
         {
             // define a lazy service provider
             _serviceProvider = new Lazy<IServiceProvider>(() =>
@@ -31,26 +31,37 @@ namespace BlazorTemplater
             });
         }
 
+        /// <summary>
+        /// Lazy service collection instance
+        /// </summary>
         private readonly ServiceCollection _serviceCollection = new ServiceCollection();
+
+        /// <summary>
+        /// Lazy HtmlRenderer instance
+        /// </summary>
         private readonly Lazy<HtmlRenderer> _renderer;
+
+        /// <summary>
+        /// Lazy ServiceProvider instance
+        /// </summary>
         private readonly Lazy<IServiceProvider> _serviceProvider;
 
         /// <summary>
-        /// Services provided by DI
+        /// Services provided by Dependency Injection
         /// </summary>
         public IServiceProvider Services => _serviceProvider.Value;
 
         /// <summary>
-        /// Gets lazy renderer
+        /// Gets Renderer
         /// </summary>
         private HtmlRenderer Renderer => _renderer.Value;
 
         /// <summary>
         /// Add a service for injection - do this before rendering
         /// </summary>
-        /// <typeparam name="TContract"></typeparam>
-        /// <typeparam name="TImplementation"></typeparam>
-        /// <param name="implementation"></param>
+        /// <typeparam name="TContract">The interface/contract</typeparam>
+        /// <typeparam name="TImplementation">The implementation type</typeparam>
+        /// <param name="implementation">Instance to return</param>
         public void AddService<TContract, TImplementation>(TImplementation implementation) where TImplementation : TContract
         {
             if (_renderer.IsValueCreated)
@@ -63,8 +74,8 @@ namespace BlazorTemplater
         /// <summary>
         /// Add a service with implementation
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="implementation"></param>
+        /// <typeparam name="T">Type of service</typeparam>
+        /// <param name="implementation">Instance to return</param>
         public void AddService<T>(T implementation)
             => AddService<T, T>(implementation);
 

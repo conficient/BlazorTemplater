@@ -13,7 +13,7 @@ namespace BlazorTemplater.Tests
         [TestMethod]
         public void Ctor_Test()
         {
-            var templater = new BlazorTemplater();
+            var templater = new Templater();
             Assert.IsNotNull(templater);
         }
 
@@ -29,8 +29,8 @@ namespace BlazorTemplater.Tests
         {
             const string expected = @"<b>Jan 1st is 2021-01-01</b>";
 
-            var renderer = new BlazorTemplater();
-            var actual = renderer.RenderComponent<Simple>();
+            var templater = new Templater();
+            var actual = templater.RenderComponent<Simple>();
 
             Console.WriteLine(actual);
             Assert.AreEqual(expected, actual);
@@ -49,7 +49,7 @@ namespace BlazorTemplater.Tests
             // expected output
             const string expected = "<p>Steve Sanderson is awesome!</p>";
 
-            var renderer = new BlazorTemplater();
+            var templater = new Templater();
             var model = new TestModel()
             {
                 Name = "Steve Sanderson",
@@ -59,7 +59,7 @@ namespace BlazorTemplater.Tests
             {
                 { nameof(Parameters.Model), model }
             };
-            var html = renderer.RenderComponent<Parameters>(parameters);
+            var html = templater.RenderComponent<Parameters>(parameters);
 
             // trim leading space and trailing CRLF from output
             var actual = html.Trim();
@@ -77,7 +77,7 @@ namespace BlazorTemplater.Tests
             // expected output
             const string expected = "<p>Safia &amp; Pranav are awesome too!</p>";
 
-            var renderer = new BlazorTemplater();
+            var templater = new Templater();
             var model = new TestModel()
             {
                 Name = "Safia & Pranav",
@@ -87,7 +87,7 @@ namespace BlazorTemplater.Tests
             {
                 { nameof(Parameters.Model), model }
             };
-            var html = renderer.RenderComponent<Parameters>(parameters);
+            var html = templater.RenderComponent<Parameters>(parameters);
 
             // trim leading space and trailing CRLF from output
             var actual = html.Trim();
@@ -105,8 +105,8 @@ namespace BlazorTemplater.Tests
             // expected output
             const string expected = "<p>No model!</p>";
 
-            var renderer = new BlazorTemplater();
-            var html = renderer.RenderComponent<Parameters>();
+            var templater = new Templater();
+            var html = templater.RenderComponent<Parameters>();
 
             // trim leading space and trailing CRLF from output
             var actual = html.Trim();
@@ -125,12 +125,12 @@ namespace BlazorTemplater.Tests
         [TestMethod]
         public void RenderComponent_Error_Test()
         {
-            var renderer = new BlazorTemplater();
+            var templater = new Templater();
 
             // we should get a NullReferenceException thrown as Model parameter is not set
             Assert.ThrowsException<NullReferenceException>(() =>
             {
-                _ = renderer.RenderComponent<ErrorTest>();
+                _ = templater.RenderComponent<ErrorTest>();
             });
         }
 
@@ -150,16 +150,16 @@ namespace BlazorTemplater.Tests
             const int c = a + b;
             string expected = $"<p>If you add {a} and {b} you get {c}</p>";
 
-            // create a renderer and register an ITestService. The service adds values
-            var renderer = new BlazorTemplater();
-            renderer.AddService<ITestService>(new TestService());
+            // create a templater and register an ITestService. The service adds values
+            var templater = new Templater();
+            templater.AddService<ITestService>(new TestService());
 
             var parameters = new Dictionary<string, object>()
             {
                 { nameof(ServiceInjection.A), a },
                 { nameof(ServiceInjection.B), b }
             };
-            var actual = renderer.RenderComponent<ServiceInjection>(parameters);
+            var actual = templater.RenderComponent<ServiceInjection>(parameters);
 
             Console.WriteLine(actual);
             Assert.AreEqual(expected, actual);
@@ -180,7 +180,7 @@ namespace BlazorTemplater.Tests
             // on Windows the string contains \r\n and on unix it's just \n
             string expected = $"<b>Jan 1st is 2021-01-01</b>{Environment.NewLine}    <p>Dan Roth is cool!</p>";
 
-            var renderer = new BlazorTemplater();
+            var templater = new Templater();
             var model = new TestModel()
             {
                 Name = "Dan Roth",
@@ -190,7 +190,7 @@ namespace BlazorTemplater.Tests
             {
                 { nameof(Parameters.Model), model }
             };
-            var html = renderer.RenderComponent<NestedComponents>(parameters);
+            var html = templater.RenderComponent<NestedComponents>(parameters);
 
             // trim leading space and trailing CRLF from output
             var actual = html.Trim();
@@ -209,47 +209,59 @@ namespace BlazorTemplater.Tests
         [TestMethod]
         public void RenderComponent_ReusingRenderer()
         {
-            // set up
-            const int a = 2;
-            const int b = 3;
-            const int c = a + b;
-            string expected1 = $"<p>If you add {a} and {b} you get {c}</p>";
+            // create a templater and register an ITestService. The service adds values
+            var templater = new Templater();
+            templater.AddService<ITestService>(new TestService());
 
-            const int x = 456;
-            const int y = 123;
-            const int z = x + y;
-            string expected2 = $"<p>If you add {x} and {y} you get {z}</p>";
-
-            // create a renderer and register an ITestService. The service adds values
-            var renderer = new BlazorTemplater();
-            renderer.AddService<ITestService>(new TestService());
-
-            var parameters1 = new Dictionary<string, object>()
+            // Render the component 100 times
+            const int count = 100;
+            for (int a = 1; a <= count; a++)
             {
-                { nameof(ServiceInjection.A), a },
-                { nameof(ServiceInjection.B), b }
-            };
+                // set up
+                const int b = 3;
+                int c = a + b;
+                string expected = $"<p>If you add {a} and {b} you get {c}</p>";
 
-            // new parameters
-            var parameters2 = new Dictionary<string, object>()
-            {
-                { nameof(ServiceInjection.A), x },
-                { nameof(ServiceInjection.B), y }
-            };
+                var parameters = new Dictionary<string, object>()
+                {
+                    { nameof(ServiceInjection.A), a },
+                    { nameof(ServiceInjection.B), b }
+                };
 
-            // render both components
-            var actual1 = renderer.RenderComponent<ServiceInjection>(parameters1);
-            var actual2 = renderer.RenderComponent<ServiceInjection>(parameters2);
+                // render both components
+                var actual = templater.RenderComponent<ServiceInjection>(parameters);
 
-            Console.WriteLine(actual1);
-            Console.WriteLine(actual2);
-
-
-            Assert.AreEqual(expected1, actual1);
-            Assert.AreEqual(expected2, actual2);
-
+                Console.WriteLine(actual);
+                Assert.AreEqual(expected, actual);
+            }
         }
 
         #endregion
+
+        #region Code-Behind Test
+
+        /// <summary>
+        /// Test a simple component with no parameters
+        /// </summary>
+        [TestMethod]
+        public void RenderComponent_CodeBehind_Test()
+        {
+            const string expected = @"<p>Yes Jon, we can use code-behind files with BlazorTemplater</p>";
+
+            var templater = new Templater();
+            var parameters = new Dictionary<string, object>()
+            {
+                { nameof(CodeBehind.App), "BlazorTemplater" },
+                { nameof(CodeBehind.Name), "Jon" }
+            };
+            var actual = templater.RenderComponent<CodeBehind>(parameters);
+
+            Console.WriteLine(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        #endregion
+
     }
 }
