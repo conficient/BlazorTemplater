@@ -36,9 +36,10 @@ AMD Ryzen 7 1700, 1 CPU, 16 logical and 8 physical cores
 
 Library versions used:
  - BlazorTemplater: v1.1.1
+ - RazorTemplating: 1.5
+
  - RazorLight: v2.0.0-rc.3
  - RazorEngine: TBC
- - RazorTemplating: TBC
 
 ## Key Points
 
