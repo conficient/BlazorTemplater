@@ -6,13 +6,13 @@
 BenchmarkDotNet runs
 
 ### Summary .NET Core 3.1
-
+```
 BenchmarkDotNet=v0.12.1, OS=Windows 10.0.19041.867 (2004/?/20H1)
 AMD Ryzen 7 1700, 1 CPU, 16 logical and 8 physical cores
 .NET Core SDK=6.0.100-preview.3.21202.5
   [Host]     : .NET Core 3.1.13 (CoreCLR 4.700.21.11102, CoreFX 4.700.21.11602), X64 RyuJIT
   DefaultJob : .NET Core 3.1.13 (CoreCLR 4.700.21.11102, CoreFX 4.700.21.11602), X64 RyuJIT
-
+```
 
 |               Method |     Mean |     Error |    StdDev |   Median |      Min |       Max |   Gen 0 |  Gen 1 |  Gen 2 | Allocated |
 |--------------------- |---------:|----------:|----------:|---------:|---------:|----------:|--------:|-------:|-------:|----------:|
