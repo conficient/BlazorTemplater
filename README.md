@@ -75,9 +75,10 @@ In comparison, a **Razor Component** is a class created at _compile time_ so usi
 BlazorRenderer supports using:
  - Rendering of `.razor` templates to HTML
  - Setting `[Parameters]` on Components
- - Injecting service sependencies via `.AddService<..>`
+ - Injecting [service dependencies](https://docs.microsoft.com/en-us/aspnet/core/blazor/fundamentals/dependency-injection) via `.AddService<..>`
  - Nested Components
  - [Code-behind Components](https://docs.microsoft.com/en-us/aspnet/core/blazor/components/?view=aspnetcore-5.0#partial-class-support)
+ - [Cascading Values](https://docs.microsoft.com/en-us/aspnet/core/blazor/components/cascading-values-and-parameters)
  
 ### Limitations
 

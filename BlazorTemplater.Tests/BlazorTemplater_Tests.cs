@@ -201,6 +201,29 @@ namespace BlazorTemplater.Tests
 
         #endregion
 
+        #region Cascading Values
+
+        [TestMethod]
+        public void RenderComponent_CascadingValues_Test()
+        {
+            const string expected = "<p>The name is Bill</p>";
+            var info = new CascadeInfo() { Name = "Bill" };
+
+            var templater = new Templater();
+            var parameters = new Dictionary<string, object>()
+            {
+                { nameof(CascadeParent.Info), info}
+            };
+            var html = templater.RenderComponent<CascadeParent>(parameters);
+
+            // trim leading space and trailing CRLF from output
+            var actual = html.Trim();
+
+            Assert.AreEqual(expected, actual);
+
+        }
+        #endregion
+
         #region Multiple Renders
 
         /// <summary>
