@@ -11,6 +11,7 @@
     <PackageTags>Blazor RazorComponents HTML Email Templating</PackageTags>
     <Version>1.2.0</Version>
     <PackageReleaseNotes>Fixed issue with using library in .NET 5.0</PackageReleaseNotes>
+    <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

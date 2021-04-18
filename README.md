@@ -1,10 +1,53 @@
 # BlazorTemplater
 A library that generates HTML (e.g. for emails) from [Razor Components](https://docs.microsoft.com/en-us/aspnet/core/blazor/components).
 
-[![Build](https://github.com/conficient/BlazorTemplater/actions/workflows/dotnet-core.yml/badge.svg)](https://github.com/conficient/BlazorTemplater/actions/workflows/dotnet-core.yml)
+[![Build](https://github.com/conficient/BlazorTemplater/actions/workflows/dotnet-core.yml/badge.svg)](https://github.com/conficient/BlazorTemplater/actions/workflows/dotnet-core.yml) [![Nuget](https://img.shields.io/nuget/dt/blazortemplater?logo=nuget&style=flat-square)](https://www.nuget.org/packages/blazortemplater/)
 
 #### Examples
-Using the library is simple:
+
+The `ComponentRenderer` uses a [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface).
+
+Let's render `MyComponent.razor` as a HTML string.
+```c#
+string html = new ComponentRenderer<MyComponent>().Render();
+```
+
+**Parameters**
+
+You can set parameters on a component:
+```c#
+var model = new Model() { Value = "Test" };
+var title = "Test";
+string html = new ComponentRenderer<MyComponent>()
+            .Set(c => c.Model, model)
+            .Set(c => c.Title, title)
+            .Render();
+```
+MyComponent has a `Model` parameter and a `Title` parameter. The fluent interface uses a lambda expression to specify the property and ensures the value matches the property type.
+
+**Dependency Injection**
+
+You can specify services to be provided to a component that uses `@inject`, e.g.:
+```c#
+string html = new ComponentRenderer<MyComponent>()
+            .AddService<ITestService>(new TestService())
+            .Render();
+```
+#### The 'kitchen sink'
+You can chain them all together in any order, provided `.Render()` is last:
+```c#
+var model = new Model() { Value = "Test" };
+var title = "Test";
+string html = new ComponentRenderer<MyComponent>()
+            .Set(c => c.Title, title)
+            .AddService<ITestService>(new TestService())
+            .Set(c => c.Model, model)
+            .Render();
+```
+
+#### Template Method
+You can also use the older templater method (retained for compatability):
+
 ```c#
 var templater = new Templater();
 var html = templater.RenderComponent<MyComponent>();
@@ -41,9 +84,7 @@ Add the `BlazorTemplater` NUGET package to your library.
 
 ### Usage
 
-Create an instance of the `Templater` class, and use `.RenderComponent<TComponent>()` to create the HTML.
-
-See the [Usage](Docs/usage) page for more detailed usage guidance.
+See the [usage guide](Docs/Usage).
 
 ### Supported Project Types
 
@@ -83,6 +124,7 @@ BlazorRenderer supports using:
 ### Limitations
 
 The following are not supported/tested:
+   - JavaScript
    - EventCallbacks
    - Rerendering
    - CSS and CSS isolation
@@ -105,4 +147,6 @@ This was never developed into a functioning product or library. For unit testing
 | -------- |-----------|
 | v1.0.0   | Inital Release (to Nuget) |
 | v1.1.0   | **Breaking change**: renamed `BlazorTemplater` class to `Templater` [#4](https://github.com/conficient/BlazorTemplater/issues/4) |
+| v1.2.0   | Added multi-targetting for .NET Std/.NET 5 to fix bug [#12](https://github.com/conficient/BlazorTemplater/issues/12) |
+| v1.3.0   | Added `ComponentRenderer<T>` for fluent interface and typed parameter setting |
 

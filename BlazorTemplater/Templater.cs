@@ -32,9 +32,9 @@ namespace BlazorTemplater
         }
 
         /// <summary>
-        /// Lazy service collection instance
+        /// Service collection instance
         /// </summary>
-        private readonly ServiceCollection _serviceCollection = new ServiceCollection();
+        private readonly ServiceCollection _serviceCollection = new();
 
         /// <summary>
         /// Lazy HtmlRenderer instance
@@ -106,10 +106,29 @@ namespace BlazorTemplater
         /// </summary>
         /// <param name="parameters">optional dictionary</param>
         /// <returns></returns>
-        private ParameterView GetParameterView(IDictionary<string, object> parameters)
+        private static ParameterView GetParameterView(IDictionary<string, object> parameters)
         {
             if (parameters == null) return ParameterView.Empty;
             return ParameterView.FromDictionary(parameters);
         }
+
+        /// <summary>
+        /// Method for ComponentBuilder to use
+        /// </summary>
+        /// <typeparam name="TComponent"></typeparam>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        internal string RenderComponent<TComponent>(ParameterView parameters) where TComponent : IComponent
+        {
+            // generate a render model
+            var component = new RenderedComponent<TComponent>(Renderer);
+
+            // set the parameters
+            component.SetParametersAndRender(parameters);
+
+            // get markup
+            return component.GetMarkup();
+        }
+
     }
 }
