@@ -11,6 +11,14 @@ Let's render `MyComponent.razor` as a HTML string.
 ```c#
 string html = new ComponentRenderer<MyComponent>().Render();
 ```
+<details>
+ <summary><code>MyComponent.razor</code></summary>
+            
+```html
+<p>Hello from BlazorTemplater!</p>
+```
+            
+</details>
 
 **Parameters**
 
@@ -25,6 +33,21 @@ string html = new ComponentRenderer<MyComponent>()
 ```
 MyComponent has a `Model` parameter and a `Title` parameter. The fluent interface uses a lambda expression to specify the property and ensures the value matches the property type.
 
+<details>
+  <summary><code>MyComponent.razor</code></summary>
+            
+```html
+<h1>@Title</h1>
+<p>Your model value is @Model.Value</p>
+@code
+{
+ [Parameter] public Model Model { get; set; }
+ [Parameter] public string Title { get; set; }
+}
+```
+
+</details>
+
 **Dependency Injection**
 
 You can specify services to be provided to a component that uses `@inject`, e.g.:
@@ -33,6 +56,16 @@ string html = new ComponentRenderer<MyComponent>()
             .AddService<ITestService>(new TestService())
             .Render();
 ```
+
+<details>
+  <summary><code>MyComponent.razor</code></summary>
+            
+```html
+@inject ITestService MyService
+<p>Use service: @MyService.SomeFunction()</p>
+```
+</details>
+
 #### The 'kitchen sink'
 You can chain them all together in any order, provided `.Render()` is last:
 ```c#
@@ -45,6 +78,24 @@ string html = new ComponentRenderer<MyComponent>()
             .Render();
 ```
 
+
+<details>
+  <summary><code>MyComponent.razor</code></summary>
+            
+```html
+@inject ITestService MyService
+<h1>@Title</h1>
+<p>Your model value is @Model.Value</p>
+<p>Use service: @MyService.SomeFunction()</p>
+@code
+{
+ [Parameter] public Model Model { get; set; }
+ [Parameter] public string Title { get; set; }
+}
+```
+</details>
+
+            
 #### Template Method
 You can also use the older templater method (retained for compatability):
 
