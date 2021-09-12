@@ -57,6 +57,26 @@ string html = new ComponentRenderer<MyComponent>()
             .Render();
 ```
 
+**Layouts** <small style="background-color: green; color:white; padding: 2px 4px">New!</small>
+
+If a top-level component has a `@layout` attribute it will be applied. Alternatively you can apply a template explicitly:
+```c#
+string html = new ComponentRenderer<MyComponent>()
+            .UseLayout<MyLayout>()
+            .Render();
+```
+You can also specify via a type:
+```c#
+void Example(Type layout)
+{
+    string html = new ComponentRenderer<MyComponent>()
+            .UseLayout(layout)
+            .Render();
+}
+```
+See [Layouts](docs/Layouts) for more information
+
+
 <details>
   <summary><code>MyComponent.razor</code></summary>
             
@@ -75,6 +95,7 @@ string html = new ComponentRenderer<MyComponent>()
             .Set(c => c.Title, title)
             .AddService<ITestService>(new TestService())
             .Set(c => c.Model, model)
+            .UseLayout<MyLayout>()
             .Render();
 ```
 
@@ -97,37 +118,7 @@ string html = new ComponentRenderer<MyComponent>()
 
             
 #### Template Method
-You can also use the older templater method (retained for compatability):
-
-```c#
-var templater = new Templater();
-var html = templater.RenderComponent<MyComponent>();
-```
-This renders the `MyComponent` component as HTML.
-
-**Parameters**
-
-You can also set parameters on a component, e.g.
-```c#
-var templater = new Templater();
-var myModel = new Model() { Value = "test" };
-var parameters = new Dictionary<string, object>()
-    {
-        { nameof(MyComponent.Model), myModel }
-    };
-var html = templater.RenderComponent<MyComponent>(parameters);
-```
-The dictionary is used to pass parameter values the component by name. Using `nameof()` 
-instead of hard-coding a string is recommended to avoid code changes causing errors.
-
-**Dependency Injection**
-
-You can also use dependency injection:
-```c#
-var templater = new Templater();
-templater.AddService<ITestService>(new TestService());
-var html = templater.RenderComponent<MyComponent>();
-```
+You can also use the older templater method (retained for compatability). See [Templater](docs/Templater)
 
 ## Getting Started
 
@@ -169,9 +160,9 @@ BlazorRenderer supports using:
  - Setting `[Parameters]` on Components
  - Injecting [service dependencies](https://docs.microsoft.com/en-us/aspnet/core/blazor/fundamentals/dependency-injection) via `.AddService<..>`
  - Nested Components
- - [Code-behind Components](https://docs.microsoft.com/en-us/aspnet/core/blazor/components/?view=aspnetcore-5.0#partial-class-support)
+ - [Code-behind Components/partial classes](https://docs.microsoft.com/en-us/aspnet/core/blazor/components/?view=aspnetcore-5.0#partial-class-support)
  - [Cascading Values](https://docs.microsoft.com/en-us/aspnet/core/blazor/components/cascading-values-and-parameters)
- 
+ - Layouts
 ### Limitations
 
 The following are not supported/tested:
@@ -200,4 +191,5 @@ This was never developed into a functioning product or library. For unit testing
 | v1.1.0   | **Breaking change**: renamed `BlazorTemplater` class to `Templater` [#4](https://github.com/conficient/BlazorTemplater/issues/4) |
 | v1.2.0   | Added multi-targetting for .NET Std/.NET 5 to fix bug [#12](https://github.com/conficient/BlazorTemplater/issues/12) |
 | v1.3.0   | Added `ComponentRenderer<T>` for fluent interface and typed parameter setting |
+| v1.4.0   | Added support for Layouts |
 

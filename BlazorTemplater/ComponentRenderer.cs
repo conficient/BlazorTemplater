@@ -108,12 +108,33 @@ namespace BlazorTemplater
 
         #endregion Set Parameters
 
-        /// <summary>
-        /// Builds the <see cref="ParameterView"/> with the parameters added to the builder.
-        /// </summary>
-        /// <returns>The created <see cref="ParameterView"/>.</returns>
-        private ParameterView Build() => ParameterView.FromDictionary(parameters);
+        #region Layout
 
+        /// <summary>
+        /// Set the layout to use when rendering
+        /// </summary>
+        /// <typeparam name="TLayout">The Layout type - should inherit LayoutComponentBase</typeparam>
+        /// <returns>self</returns>
+        public ComponentRenderer<TComponent> UseLayout<TLayout>() where TLayout : LayoutComponentBase
+        {
+            templater.UseLayout<TLayout>();
+            return this;
+        }
+
+        /// <summary>
+        /// Set the layout to use when rendering
+        /// </summary>
+        /// <typeparam name="layoutType">The Layout type - should inherit LayoutComponentBase</typeparam>
+        /// <returns>self</returns>
+        public ComponentRenderer<TComponent> UseLayout(Type layoutType)
+        {
+            templater.UseLayout(layoutType);
+            return this;
+        }
+
+        #endregion
+
+ 
         /// <summary>
         /// Render the component to HTML
         /// </summary>
@@ -121,7 +142,7 @@ namespace BlazorTemplater
         public string Render()
         {
             // renders the component and returns the markup HTML
-            return templater.RenderComponent<TComponent>(Build());
+            return templater.RenderComponent<TComponent>(parameters);
         }
     }
 }

@@ -8,7 +8,7 @@ Change the default project SDK from
 ```
 <Project Sdk="Microsoft.NET.Sdk">
 ```
-to the Razor SDL:
+to the Razor SDK:
 ```
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 ```
@@ -24,8 +24,8 @@ Add the `<RazorLangVersion>` tag to the `<PropertyGroup>`, e.g.:
 Include these two NUGET packages in the package references
 ```
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.13" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.14" />
   </ItemGroup>
 ```
 ##### 4. Add an `_Imports.razor` file

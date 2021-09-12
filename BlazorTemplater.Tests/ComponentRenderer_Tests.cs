@@ -207,5 +207,102 @@ namespace BlazorTemplater.Tests
 
         #endregion
 
+        #region Layouts
+
+        /// <summary>
+        /// Renders a component with a LayoutAttribute correctly
+        /// </summary>
+        [TestMethod]
+        public void LayoutAttribute_Test()
+        {
+            // this text appears in the layout:
+            const string expectedTemplate = "<title>LayoutFile</title>";
+            // this text appears in the content:
+            const string expectedContent = "<p>Name = Test!</p>";
+
+            var html = new ComponentRenderer<LayoutComponent>()
+                .Set(x => x.Name, "Test!")
+                .Render();
+
+            Console.WriteLine(html);
+
+            StringAssert.Contains(html, expectedTemplate, "Expected template was not found");
+            StringAssert.Contains(html, expectedContent, "Expected content was not found");
+        }
+
+        /// <summary>
+        /// test that .UseLayout&lt;TLayout&gt; works
+        /// </summary>
+        [TestMethod]
+        public void UseLayoutT_Test()
+        {
+            // this text appears in the layout:
+            const string expectedTemplate = "<title>Layout2</title>";
+            // this text appears in the content:
+            const string expectedContent = @"<b>Jan 1st is 2021-01-01</b>";
+
+            // render a component that has no layout
+            var html = new ComponentRenderer<Simple>()
+                .UseLayout<Layout2>()   // set the layout
+                .Render();
+
+            Console.WriteLine(html);
+
+            StringAssert.Contains(html, expectedTemplate, "Expected template was not found");
+            StringAssert.Contains(html, expectedContent, "Expected content was not found");
+        }
+
+        /// <summary>
+        /// test that .UseLayout&lt;TLayout&gt; works
+        /// </summary>
+        [TestMethod]
+        public void UseLayout_Test()
+        {
+            // this text appears in the layout:
+            const string expectedTemplate = "<title>LayoutFile</title>";
+            // this text appears in the content:
+            const string expectedContent = @"<b>Jan 1st is 2021-01-01</b>";
+
+            // get layout type:
+            var layout = typeof(LayoutFile);
+
+            // render a component that has no layout
+            var html = new ComponentRenderer<Simple>()
+                .UseLayout(layout)   // set the layout
+                .Render();
+
+            Console.WriteLine(html);
+
+            StringAssert.Contains(html, expectedTemplate, "Expected template was not found");
+            StringAssert.Contains(html, expectedContent, "Expected content was not found");
+        }
+
+
+        /// <summary>
+        /// test that .UseLayout&lt;TLayout&gt; will not accept a type that does not inherit from LayoutComponentBase
+        /// </summary>
+        /// <remarks>
+        /// The Type-based `UseLayout` can only validate at runtime, whereas the generic version
+        /// can validate at compile time.
+        /// </remarks>
+        [TestMethod]
+        public void UseLayout_ThrowsIfTypeInvalid()
+        {
+            // NOT a layout type:
+            var layout = typeof(Simple);
+
+            // render a component that has no layout
+            var cr = new ComponentRenderer<Simple>();
+
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                // try to set the layout
+                cr.UseLayout(layout);
+            });
+        }
+
+        #endregion
+
     }
+
 }
