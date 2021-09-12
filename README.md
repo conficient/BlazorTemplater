@@ -84,7 +84,7 @@ void Example(Type layout)
             .Render();
 }
 ```
-See [Layouts](blob/main/docs/Layouts) for more information
+See [Layouts](Docs/Layouts.md) for more information
 
 #### The 'kitchen sink'
 You can chain them all together in any order, provided `.Render()` is last:
@@ -117,7 +117,7 @@ string html = new ComponentRenderer<MyComponent>()
 
             
 #### Template Method
-You can also use the older templater method (retained for compatability). See [Templater](blob/main/docs/Templater)
+You can also use the older templater method (retained for compatability). See [Templater](Docs/Templater.md)
 
 ## Getting Started
 
@@ -125,7 +125,7 @@ Add the `BlazorTemplater` NUGET package to your library.
 
 ### Usage
 
-See the [usage guide](blob/main/docs/Usage).
+See the [usage guide](Docs/Usage.md).
 
 ### Supported Project Types
 
@@ -136,7 +136,7 @@ See the [usage guide](blob/main/docs/Usage).
  - .NET 5 
  - .NET 6
 
-Libraries or applications using `BlazorTemplator` need to have the **Razor SDK** enabled to provide compilation and intellisense for `.razor` files. If you have an existing .NET Standard class library that does not have Razor Component support, follow [this guide](Docs/AddRazorSupport) to upgrade the library. I did have issues retrofitting Razor support into the .NET Core 3.1 unit test app, so I moved the `.razor` classes into a .NET Standard library `Templater.Library`. This should not be an issue for a Blazor WASM or Blazor Server application using .NET Core 3.1 since they already support.
+Libraries or applications using `BlazorTemplator` need to have the **Razor SDK** enabled to provide compilation and intellisense for `.razor` files. If you have an existing .NET Standard class library that does not have Razor Component support, follow [this guide](Docs/AddRazorSupport.md) to upgrade the library. I did have issues retrofitting Razor support into the .NET Core 3.1 unit test app, so I moved the `.razor` classes into a .NET Standard library `Templater.Library`. This should not be an issue for a Blazor WASM or Blazor Server application using .NET Core 3.1 since they already support.
 
 ## Background
 
