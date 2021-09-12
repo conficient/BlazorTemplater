@@ -1,4 +1,4 @@
-# BlazorTemplater
+f# BlazorTemplater
 A library that generates HTML (e.g. for emails) from [Razor Components](https://docs.microsoft.com/en-us/aspnet/core/blazor/components).
 
 [![Build](https://github.com/conficient/BlazorTemplater/actions/workflows/dotnet-core.yml/badge.svg)](https://github.com/conficient/BlazorTemplater/actions/workflows/dotnet-core.yml) [![Nuget](https://img.shields.io/nuget/dt/blazortemplater?logo=nuget&style=flat-square)](https://www.nuget.org/packages/blazortemplater/)
@@ -57,6 +57,16 @@ string html = new ComponentRenderer<MyComponent>()
             .Render();
 ```
 
+<details>
+  <summary><code>MyComponent.razor</code></summary>
+            
+```html
+@inject ITestService MyService
+<p>Use service: @MyService.SomeFunction()</p>
+```
+ 
+</details>
+
 **Layouts** <small style="background-color: green; color:white; padding: 2px 4px">New!</small>
 
 If a top-level component has a `@layout` attribute it will be applied. Alternatively you can apply a template explicitly:
@@ -74,17 +84,7 @@ void Example(Type layout)
             .Render();
 }
 ```
-See [Layouts](docs/Layouts) for more information
-
-
-<details>
-  <summary><code>MyComponent.razor</code></summary>
-            
-```html
-@inject ITestService MyService
-<p>Use service: @MyService.SomeFunction()</p>
-```
-</details>
+See [Layouts](blob/main/docs/Layouts) for more information
 
 #### The 'kitchen sink'
 You can chain them all together in any order, provided `.Render()` is last:
@@ -118,7 +118,7 @@ string html = new ComponentRenderer<MyComponent>()
 
             
 #### Template Method
-You can also use the older templater method (retained for compatability). See [Templater](docs/Templater)
+You can also use the older templater method (retained for compatability). See [Templater](blob/main/docs/Templater)
 
 ## Getting Started
 
@@ -126,7 +126,7 @@ Add the `BlazorTemplater` NUGET package to your library.
 
 ### Usage
 
-See the [usage guide](Docs/Usage).
+See the [usage guide](blob/main/docs/Usage).
 
 ### Supported Project Types
 
