@@ -9,8 +9,8 @@
     <PackageProjectUrl>https://github.com/conficient/BlazorTemplater</PackageProjectUrl>
     <RepositoryUrl>https://github.com/conficient/BlazorTemplater</RepositoryUrl>
     <PackageTags>Blazor RazorComponents HTML Email Templating</PackageTags>
-    <Version>1.3.0</Version>
-    <PackageReleaseNotes>Fixed issue with using library in .NET 5.0</PackageReleaseNotes>
+    <Version>1.4.0</Version>
+    <PackageReleaseNotes>Added support for Layouts</PackageReleaseNotes>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 

@@ -286,5 +286,98 @@ namespace BlazorTemplater.Tests
 
         #endregion
 
+        #region Layouts
+
+        /// <summary>
+        /// Verify that a component using `@layout ...` is applied
+        /// </summary>
+        [TestMethod]
+        public void Layout_AppliedFromAttribute()
+        {
+            const string expectedContent = @"<p>Name = Test!</p>";
+            const string expectedLayout = @"<title>LayoutFile</title>";
+
+            var templater = new Templater();
+            var parameters = new Dictionary<string, object>()
+            {
+                { nameof(LayoutComponent.Name), "Test!" }
+            };
+            var actual = templater.RenderComponent<LayoutComponent>(parameters);
+
+            Console.WriteLine(actual);
+            StringAssert.Contains(actual, expectedContent, "Content not found");
+            StringAssert.Contains(actual, expectedLayout);
+        }
+
+        [TestMethod]
+        public void UseLayoutT_AppliesLayout()
+        {
+            const string expectedContent = @"<b>Jan 1st is 2021-01-01</b>";
+            const string expectedLayout = @"<title>LayoutFile</title>";
+ 
+            var templater = new Templater();
+            templater.UseLayout<LayoutFile>();
+            // render Simple component that does not have a layout
+            var actual = templater.RenderComponent<Simple>();
+
+            Console.WriteLine(actual);
+            StringAssert.Contains(actual, expectedContent, "Content not found");
+            StringAssert.Contains(actual, expectedLayout);
+        }
+
+        [TestMethod]
+        public void UseLayout_AppliesLayout()
+        {
+            const string expectedContent = @"<b>Jan 1st is 2021-01-01</b>";
+            const string expectedLayout = @"<title>LayoutFile</title>";
+
+            var layoutToUse = typeof(LayoutFile);
+
+            var templater = new Templater();
+            // use a type parameter
+            templater.UseLayout(layoutToUse);
+            // render Simple component that does not have a layout
+            var actual = templater.RenderComponent<Simple>();
+
+            Console.WriteLine(actual);
+            StringAssert.Contains(actual, expectedContent, "Content not found");
+            StringAssert.Contains(actual, expectedLayout);
+        }
+
+        [TestMethod]
+        public void UseLayout_ThrowsIfTypeIsNotValid()
+        {
+            // type does not inherit from LayoutComponentBase
+            var layoutToUse = typeof(Simple);
+
+            var templater = new Templater();
+            // attempt to use invalid layout:
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                templater.UseLayout(layoutToUse);
+            });
+        }
+
+        [TestMethod] 
+        public void GetLayoutFromAttribute_TestWhenPresent()
+        {
+            // LayoutComponent should specify LayoutFile as the layout
+            var expected = typeof(LayoutFile);
+
+            var actual = Templater.GetLayoutFromAttribute<LayoutComponent>();
+
+            Assert.AreEqual(expected, actual);
+        }
+        
+        [TestMethod] 
+        public void GetLayoutFromAttribute_TestWhenNotPresent()
+        {
+            // Simple component has no layout
+            var actual = Templater.GetLayoutFromAttribute<Simple>();
+
+            Assert.IsNull(actual);
+        }
+
+        #endregion
     }
 }

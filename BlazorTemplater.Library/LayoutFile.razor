@@ -1,0 +1,27 @@
+﻿@inherits LayoutComponentBase
+@*
+    Demonstrate use of layout application. Layouts encapsulate your component 
+    Consider using a template such as those at https://github.com/leemunroe/responsive-html-email-template 
+*@
+<html>
+<head>
+    <title>LayoutFile</title>
+</head>
+<body>
+    <div class="page">
+        <div class="sidebar">
+            <nav>TODO</nav>
+        </div>
+
+        <div class="main">
+            <div class="top-row px-4">
+                <a href="https://github.com/conficient/BlazorTemplater" target="_blank" class="ml-md-auto">About</a>
+            </div>
+
+            <div class="content px-4">
+                @Body
+            </div>
+        </div>
+    </div>
+</body>
+</html>
