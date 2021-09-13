@@ -9,8 +9,8 @@
     <PackageProjectUrl>https://github.com/conficient/BlazorTemplater</PackageProjectUrl>
     <RepositoryUrl>https://github.com/conficient/BlazorTemplater</RepositoryUrl>
     <PackageTags>Blazor RazorComponents HTML Email Templating</PackageTags>
-    <Version>1.4.0</Version>
-    <PackageReleaseNotes>Added support for Layouts</PackageReleaseNotes>
+    <Version>1.4.1</Version>
+    <PackageReleaseNotes>Added ability to render by Type</PackageReleaseNotes>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 

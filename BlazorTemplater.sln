@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31606.5
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{C0365D75-5C0A-4E88-BC0F-FF595B731B6B}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B0E3EF40-C
 	ProjectSection(SolutionItems) = preProject
 		Docs\AddRazorSupport.md = Docs\AddRazorSupport.md
 		Docs\Layouts.md = Docs\Layouts.md
+		Docs\Templater.md = Docs\Templater.md
 		Docs\Usage.md = Docs\Usage.md
 	EndProjectSection
 EndProject
