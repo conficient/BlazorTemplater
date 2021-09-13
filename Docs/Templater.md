@@ -1,12 +1,24 @@
 # Templater 
 
-The `Templater` class renders the component. It is superceded by `ComponentRenderer` but is used by this, and retained for backward compatibility.
+The `Templater` class renders the component. It is superceded by `ComponentRenderer` but is used by this, and retained for backward compatibility. It also supports a non-generic `RenderComponent` method so is able to render from a `Type` provided that type implements `IComponent`.
 
 ```c#
 var templater = new Templater();
 var html = templater.RenderComponent<MyComponent>();
 ```
 This renders the `MyComponent` component as HTML.
+
+** Non-Generic method **
+
+The `Templater` from v1.4.1 supports a non-generic `RenderComponent()` overload using the type of a component.
+
+```c#
+var componentType = typeof(MyComponent);
+var templater = new Templater();
+var html = templater.RenderComponent(componentType);
+```
+
+This feature was added as it enables the option to create static websites from a set of `RazorComponents` using reflection. See #15
 
 **Parameters**
 

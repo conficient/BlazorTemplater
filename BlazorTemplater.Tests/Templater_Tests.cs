@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace BlazorTemplater.Tests
 {
     [TestClass]
-    public class BlazorTemplater_Tests
+    public class Templater_Tests
     {
         #region Ctor
 
@@ -31,6 +31,25 @@ namespace BlazorTemplater.Tests
 
             var templater = new Templater();
             var actual = templater.RenderComponent<Simple>();
+
+            Console.WriteLine(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+        #endregion Simple render
+        
+        #region Non-Generic Simple render
+
+        /// <summary>
+        /// Test a simple component with no parameters
+        /// </summary>
+        [TestMethod]
+        public void RenderComponent_Simple_TestNonGeneric()
+        {
+            const string expected = @"<b>Jan 1st is 2021-01-01</b>";
+
+            var templater = new Templater();
+            var actual = templater.RenderComponent(typeof(Simple));
 
             Console.WriteLine(actual);
             Assert.AreEqual(expected, actual);

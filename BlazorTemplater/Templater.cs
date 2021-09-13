@@ -97,12 +97,28 @@ namespace BlazorTemplater
         /// </remarks>
         public string RenderComponent<TComponent>(IDictionary<string, object> parameters = null) where TComponent : IComponent
         {
-            var layout = GetLayout<TComponent>();
+            var componentType = typeof(TComponent);
+            return RenderComponent(componentType, parameters);
+        }
+
+        /// <summary>
+        /// Render a component to HTML (non-generic version)
+        /// </summary>
+        /// <param name="componentType">the Type of the component</param>
+        /// <param name="parameters">Optional dictionary of parameters</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This non-generic version can accept a Type
+        /// </remarks>
+        public string RenderComponent(Type componentType, IDictionary<string, object> parameters = null)
+        {
+            ValidateComponentType(componentType);
+            var layout = GetLayout(componentType);
 
             // create a RenderFragment from the component
             var childContent = (RenderFragment)(builder =>
             {
-                builder.OpenComponent(0, typeof(TComponent));
+                builder.OpenComponent(0, componentType);
                 // add parameters if any
                 if (parameters != null && parameters.Any())
                     builder.AddMultipleAttributes(1, parameters);
@@ -119,6 +135,18 @@ namespace BlazorTemplater
 
             return layoutView.GetMarkup();
         }
+
+        /// <summary>
+        /// Check that a Type is an IComponent
+        /// </summary>
+        /// <param name="componentType"></param>
+        private static void ValidateComponentType(Type componentType)
+        {
+            if (!_iComponentType.IsAssignableFrom(componentType))
+                throw new ArgumentException("Type must implement IComponent", nameof(componentType));
+        }
+
+        private static readonly Type _iComponentType = typeof(IComponent);
 
         /// <summary>
         /// Create ParameterView from dictionary
@@ -143,7 +171,7 @@ namespace BlazorTemplater
         }
 
         /// <summary>
-        /// Sets a layout to use from a type
+        /// Sets a layout to use from a Type
         /// </summary>
         /// <param name="layout">The type to use. Must inherit from LayoutComponentBase</param>
         public void UseLayout(Type layoutType)
@@ -162,49 +190,48 @@ namespace BlazorTemplater
 
         private static readonly Type layoutBaseType = typeof(LayoutComponentBase);
 
-        /// <summary>
-        /// Render a component with a Layout
-        /// </summary>
-        /// <typeparam name="TComponent">Component type to render</typeparam>
-        /// <param name="layout"></param>
-        /// <param name="parameters"></param>
-        /// <returns>HTML string</returns>
-        private string RenderLayoutView<TComponent>(Type layout, IDictionary<string, object> parameters) where TComponent : IComponent
-        {
-            // create a RenderFragment from the component
-            var childContent = (RenderFragment)(builder =>
-            {
-                builder.OpenComponent(0, typeof(TComponent));
-                // add parameters
-                if (parameters != null && parameters.Any())
-                    builder.AddMultipleAttributes(1, parameters);
-                builder.CloseComponent();
-            });
-            // render a LayoutView and use the TComponent as the child content
-            var lv = new RenderedComponent<LayoutView>(Renderer);
-            var lvp = new Dictionary<string, object>()
-            {
-                { nameof(LayoutView.Layout), layout },
-                { nameof(LayoutView.ChildContent), childContent }
-            };
-            lv.SetParametersAndRender(GetParameterView(lvp));
+        ///// <summary>
+        ///// Render a component with a Layout
+        ///// </summary>
+        ///// <typeparam name="TComponent">Component type to render</typeparam>
+        ///// <param name="layout"></param>
+        ///// <param name="parameters"></param>
+        ///// <returns>HTML string</returns>
+        //private string RenderLayoutView<TComponent>(Type layout, IDictionary<string, object> parameters) where TComponent : IComponent
+        //{
+        //    // create a RenderFragment from the component
+        //    var childContent = (RenderFragment)(builder =>
+        //    {
+        //        builder.OpenComponent(0, typeof(TComponent));
+        //        // add parameters
+        //        if (parameters != null && parameters.Any())
+        //            builder.AddMultipleAttributes(1, parameters);
+        //        builder.CloseComponent();
+        //    });
+        //    // render a LayoutView and use the TComponent as the child content
+        //    var lv = new RenderedComponent<LayoutView>(Renderer);
+        //    var lvp = new Dictionary<string, object>()
+        //    {
+        //        { nameof(LayoutView.Layout), layout },
+        //        { nameof(LayoutView.ChildContent), childContent }
+        //    };
+        //    lv.SetParametersAndRender(GetParameterView(lvp));
 
-            return lv.GetMarkup();
-        }
-
+        //    return lv.GetMarkup();
+        //}
 
         /// <summary>
         /// Get the layout in a component
         /// </summary>
-        /// <typeparam name="TComponent"></typeparam>
+        /// <param name="componentType"></param>
         /// <returns></returns>
-        private Type GetLayout<TComponent>() where TComponent : IComponent
+        private Type GetLayout(Type componentType) 
         {
             // Use layout override if set
             if (layout != null)
                 return layout;
             // check top-level component for a layout attribute
-            return GetLayoutFromAttribute<TComponent>();
+            return GetLayoutFromAttribute(componentType);
         }
 
         /// <summary>
@@ -214,13 +241,24 @@ namespace BlazorTemplater
         /// <returns></returns>
         public static Type GetLayoutFromAttribute<TComponent>() where TComponent : IComponent
         {
-            var componentType = typeof(TComponent);
+            return GetLayoutFromAttribute(typeof(TComponent));
+        }
+
+        /// <summary>
+        /// Find first LayoutAttribute in a component if present
+        /// </summary>
+        /// <typeparam name="TComponent"></typeparam>
+        /// <returns></returns>
+        public static Type GetLayoutFromAttribute(Type componentType)
+        {
             var layoutAttrs = (LayoutAttribute[])componentType.GetCustomAttributes(typeof(LayoutAttribute), true);
             if (layoutAttrs != null && layoutAttrs.Length > 0)
                 return layoutAttrs[0].LayoutType;
             else
                 return null;
         }
+
+
         #endregion
 
     }
