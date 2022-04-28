@@ -3,13 +3,16 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
     <RazorLangVersion>3.0</RazorLangVersion>
-    <Authors>conficient</Authors>
-    <Company>conficient</Company>
-    <Description>A HTML templating engine using Razor Components (.razor) files instead of .cshtml</Description>
+    <Authors>PhotoAtomic</Authors>
+    <Company>PhotoAtomic</Company>
+    <Description>A HTML templating engine using Razor Components (.razor) files instead of .cshtml
+This is a Pull request for a new feature of the BlazorTemplater
+https://github.com/conficient/BlazorTemplater/pull/26
+while waiting for the merge</Description>
     <PackageProjectUrl>https://github.com/conficient/BlazorTemplater</PackageProjectUrl>
     <RepositoryUrl>https://github.com/conficient/BlazorTemplater</RepositoryUrl>
     <PackageTags>Blazor RazorComponents HTML Email Templating</PackageTags>
-    <Version>1.4.1</Version>
+    <Version>1.4.2 pre-release</Version>
     <PackageReleaseNotes>Added ability to render by Type</PackageReleaseNotes>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
