@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -118,6 +119,12 @@ namespace BlazorTemplater
         public ComponentRenderer<TComponent> UseLayout<TLayout>() where TLayout : LayoutComponentBase
         {
             templater.UseLayout<TLayout>();
+            return this;
+        }
+
+        public ComponentRenderer<TComponent> AddServiceProvider(ServiceProvider serviceProvider)
+        {
+            templater.AddServiceProvider(serviceProvider);
             return this;
         }
 

@@ -1,4 +1,5 @@
 ﻿using BlazorTemplater.Library;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -144,6 +145,30 @@ namespace BlazorTemplater.Tests
             // fluent ComponentBuilder approach
             var actual = new ComponentRenderer<ServiceInjection>()
                 .AddService<ITestService>(new TestService())
+                .Set(p => p.A, a)
+                .Set(p => p.B, b)
+                .Render();
+
+            Console.WriteLine(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void AddServiceProvider_Test()
+        {
+            // set up
+            const int a = 2;
+            const int b = 3;
+            const int c = a + b;
+            string expected = $"<p>If you add {a} and {b} you get {c}</p>";
+
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<ITestService>(new TestService());
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            // fluent ComponentBuilder approach
+            var actual = new ComponentRenderer<ServiceInjection>()
+                .AddServiceProvider(serviceProvider)
                 .Set(p => p.A, a)
                 .Set(p => p.B, b)
                 .Render();

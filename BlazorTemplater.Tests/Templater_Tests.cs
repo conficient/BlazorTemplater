@@ -1,4 +1,5 @@
 using BlazorTemplater.Library;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -172,6 +173,36 @@ namespace BlazorTemplater.Tests
             // create a templater and register an ITestService. The service adds values
             var templater = new Templater();
             templater.AddService<ITestService>(new TestService());
+
+            var parameters = new Dictionary<string, object>()
+            {
+                { nameof(ServiceInjection.A), a },
+                { nameof(ServiceInjection.B), b }
+            };
+            var actual = templater.RenderComponent<ServiceInjection>(parameters);
+
+            Console.WriteLine(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+        //Test that services from injected service providers works
+        [TestMethod]
+        public void AddServiceProvider_TestInstanceMethod()
+        {
+            // set up
+            const int a = 2;
+            const int b = 3;
+            const int c = a + b;
+            string expected = $"<p>If you add {a} and {b} you get {c}</p>";
+
+
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<ITestService>(new TestService());
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            // create a templater and register an ITestService. The service adds values
+            var templater = new Templater();
+            templater.AddServiceProvider(serviceProvider);
 
             var parameters = new Dictionary<string, object>()
             {

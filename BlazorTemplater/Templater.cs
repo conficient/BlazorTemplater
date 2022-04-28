@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorTemplater.ServiceProviderComposition;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -17,11 +18,14 @@ namespace BlazorTemplater
         /// Ctor
         /// </summary>
         public Templater()
-        {
+        {            
+
             // define a lazy service provider
             _serviceProvider = new Lazy<IServiceProvider>(() =>
             {
-                return _serviceCollection.BuildServiceProvider();
+                var factory = new ComposableServiceProviderFactory();
+                return factory.CreateServiceProvider(
+                    factory.CreateBuilder(_serviceCollection));
             });
 
             // define lazy renderer
@@ -35,7 +39,7 @@ namespace BlazorTemplater
         /// <summary>
         /// Service collection instance
         /// </summary>
-        private readonly ServiceCollection _serviceCollection = new();
+        private readonly ComposableServiceCollection _serviceCollection = new();
 
         /// <summary>
         /// Lazy HtmlRenderer instance
@@ -170,6 +174,11 @@ namespace BlazorTemplater
             layout = typeof(TLayout);
         }
 
+        public void AddServiceProvider(IServiceProvider serviceProvider)
+        {
+            _serviceCollection.Add(serviceProvider);
+        }
+
         /// <summary>
         /// Sets a layout to use from a Type
         /// </summary>
@@ -225,7 +234,7 @@ namespace BlazorTemplater
         /// </summary>
         /// <param name="componentType"></param>
         /// <returns></returns>
-        private Type GetLayout(Type componentType) 
+        private Type GetLayout(Type componentType)
         {
             // Use layout override if set
             if (layout != null)
