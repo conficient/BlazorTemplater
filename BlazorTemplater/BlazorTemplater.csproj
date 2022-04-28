@@ -9,12 +9,13 @@
 This is a Pull request for a new feature of the BlazorTemplater
 https://github.com/conficient/BlazorTemplater/pull/26
 while waiting for the merge</Description>
-    <PackageProjectUrl>https://github.com/conficient/BlazorTemplater</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/conficient/BlazorTemplater</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/PhotoAtomic/BlazorTemplater</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/PhotoAtomic/BlazorTemplater</RepositoryUrl>
     <PackageTags>Blazor RazorComponents HTML Email Templating</PackageTags>
-    <Version>1.4.2-PR.26</Version>
-    <PackageReleaseNotes>Added ability to render by Type</PackageReleaseNotes>
+    <Version>1.4.1-PR.26</Version>
+    <PackageReleaseNotes>Added ability to inject an entire IServiceProvider</PackageReleaseNotes>
     <LangVersion>Latest</LangVersion>
+    <PackageId>PhotoAtomic.$(AssemblyName)</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
