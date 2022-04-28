@@ -12,7 +12,7 @@ while waiting for the merge</Description>
     <PackageProjectUrl>https://github.com/conficient/BlazorTemplater</PackageProjectUrl>
     <RepositoryUrl>https://github.com/conficient/BlazorTemplater</RepositoryUrl>
     <PackageTags>Blazor RazorComponents HTML Email Templating</PackageTags>
-    <Version>1.4.2 pre-release</Version>
+    <Version>1.4.2-PR.26</Version>
     <PackageReleaseNotes>Added ability to render by Type</PackageReleaseNotes>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
