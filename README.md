@@ -11,6 +11,8 @@ Let's render `MyComponent.razor` as a HTML string.
 ```c#
 string html = new ComponentRenderer<MyComponent>().Render();
 ```
+
+
 <details>
  <summary><code>MyComponent.razor</code></summary>
             
@@ -64,10 +66,22 @@ string html = new ComponentRenderer<MyComponent>()
 @inject ITestService MyService
 <p>Use service: @MyService.SomeFunction()</p>
 ```
+
+**Add Service Provider**
+
+New for version 1.5 is the ability to add your own `IServiceProvider` rather than adding services individually. This is useful if you need to re-use the same services repeatedly. Many thanks to [@PhotoAtomic](https://github.com/PhotoAtomic) for this feature!
+```c#
+IServiceProvider myServiceProvider = GetServiceProvider();
+string html = new ComponentRenderer<MyComponent>()
+            .AddServiceProvider(myServiceProvider)
+            .Render();
+```
+
+
  
 </details>
 
-**Layouts** <small style="background-color: green; color:white; padding: 2px 4px">New!</small>
+**Layouts**
 
 If a top-level component has a `@layout` attribute it will be applied. Alternatively you can apply a template explicitly:
 ```c#
