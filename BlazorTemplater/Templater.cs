@@ -18,11 +18,11 @@ namespace BlazorTemplater
         /// Ctor
         /// </summary>
         public Templater()
-        {            
-
+        {
             // define a lazy service provider
             _serviceProvider = new Lazy<IServiceProvider>(() =>
             {
+                // creates a service provider from all providers
                 var factory = new ComposableServiceProviderFactory();
                 return factory.CreateServiceProvider(
                     factory.CreateBuilder(_serviceCollection));
@@ -66,7 +66,6 @@ namespace BlazorTemplater
         /// </summary>
         private Type layout;
 
-
         /// <summary>
         /// Add a service for injection - do this before rendering
         /// </summary>
@@ -87,8 +86,18 @@ namespace BlazorTemplater
         /// </summary>
         /// <typeparam name="T">Type of service</typeparam>
         /// <param name="implementation">Instance to return</param>
-        public void AddService<T>(T implementation)
-            => AddService<T, T>(implementation);
+        public void AddService<T>(T implementation) => AddService<T, T>(implementation);
+
+        /// <summary>
+        /// Add a new Service Provider to the collection
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        public void AddServiceProvider(IServiceProvider serviceProvider)
+        {
+            // add service provider if not present
+            if (!_serviceCollection.Contains(serviceProvider))
+                _serviceCollection.Add(serviceProvider);
+        }
 
         /// <summary>
         /// Render a component to HTML
@@ -123,11 +132,13 @@ namespace BlazorTemplater
             var childContent = (RenderFragment)(builder =>
             {
                 builder.OpenComponent(0, componentType);
+
                 // add parameters if any
                 if (parameters != null && parameters.Any())
                     builder.AddMultipleAttributes(1, parameters);
                 builder.CloseComponent();
             });
+
             // render a LayoutView and use the TComponent as the child content
             var layoutView = new RenderedComponent<LayoutView>(Renderer);
             var layoutParams = new Dictionary<string, object>()
@@ -174,11 +185,6 @@ namespace BlazorTemplater
             layout = typeof(TLayout);
         }
 
-        public void AddServiceProvider(IServiceProvider serviceProvider)
-        {
-            _serviceCollection.Add(serviceProvider);
-        }
-
         /// <summary>
         /// Sets a layout to use from a Type
         /// </summary>
@@ -191,6 +197,7 @@ namespace BlazorTemplater
                 layout = null;
                 return;
             }
+
             // validate that layoutType inherits from LayoutComponentBase
             if (!layoutBaseType.IsAssignableFrom(layoutType))
                 throw new ArgumentException("Layouts should inherit from LayoutComponentBase", nameof(layoutType));
@@ -239,6 +246,7 @@ namespace BlazorTemplater
             // Use layout override if set
             if (layout != null)
                 return layout;
+
             // check top-level component for a layout attribute
             return GetLayoutFromAttribute(componentType);
         }
@@ -267,8 +275,6 @@ namespace BlazorTemplater
                 return null;
         }
 
-
-        #endregion
-
+        #endregion Layouts
     }
 }

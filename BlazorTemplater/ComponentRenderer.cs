@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -38,6 +37,17 @@ namespace BlazorTemplater
         #endregion Ctor
 
         #region Services
+
+        /// <summary>
+        /// Add a service provider
+        /// </summary>
+        /// <param name="serviceProvider">a new IServiceProvider used when resolving dependencies</param>
+        /// <returns></returns>
+        public ComponentRenderer<TComponent> AddServiceProvider(IServiceProvider serviceProvider)
+        {
+            templater.AddServiceProvider(serviceProvider);
+            return this;
+        }
 
         /// <summary>
         /// Fluent add-service with contract and implementation
@@ -122,12 +132,6 @@ namespace BlazorTemplater
             return this;
         }
 
-        public ComponentRenderer<TComponent> AddServiceProvider(ServiceProvider serviceProvider)
-        {
-            templater.AddServiceProvider(serviceProvider);
-            return this;
-        }
-
         /// <summary>
         /// Set the layout to use when rendering
         /// </summary>
@@ -139,9 +143,8 @@ namespace BlazorTemplater
             return this;
         }
 
-        #endregion
+        #endregion Layout
 
- 
         /// <summary>
         /// Render the component to HTML
         /// </summary>

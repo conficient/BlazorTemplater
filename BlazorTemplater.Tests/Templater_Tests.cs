@@ -38,7 +38,7 @@ namespace BlazorTemplater.Tests
         }
 
         #endregion Simple render
-        
+
         #region Non-Generic Simple render
 
         /// <summary>
@@ -195,7 +195,6 @@ namespace BlazorTemplater.Tests
             const int c = a + b;
             string expected = $"<p>If you add {a} and {b} you get {c}</p>";
 
-
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<ITestService>(new TestService());
             var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -333,7 +332,6 @@ namespace BlazorTemplater.Tests
             Assert.AreEqual(expected, actual);
         }
 
-
         #endregion
 
         #region Layouts
@@ -364,7 +362,7 @@ namespace BlazorTemplater.Tests
         {
             const string expectedContent = @"<b>Jan 1st is 2021-01-01</b>";
             const string expectedLayout = @"<title>LayoutFile</title>";
- 
+
             var templater = new Templater();
             templater.UseLayout<LayoutFile>();
             // render Simple component that does not have a layout
@@ -408,7 +406,7 @@ namespace BlazorTemplater.Tests
             });
         }
 
-        [TestMethod] 
+        [TestMethod]
         public void GetLayoutFromAttribute_TestWhenPresent()
         {
             // LayoutComponent should specify LayoutFile as the layout
@@ -418,8 +416,8 @@ namespace BlazorTemplater.Tests
 
             Assert.AreEqual(expected, actual);
         }
-        
-        [TestMethod] 
+
+        [TestMethod]
         public void GetLayoutFromAttribute_TestWhenNotPresent()
         {
             // Simple component has no layout
