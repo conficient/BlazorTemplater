@@ -39,6 +39,17 @@ namespace BlazorTemplater
         #region Services
 
         /// <summary>
+        /// Add a service provider
+        /// </summary>
+        /// <param name="serviceProvider">a new IServiceProvider used when resolving dependencies</param>
+        /// <returns></returns>
+        public ComponentRenderer<TComponent> AddServiceProvider(IServiceProvider serviceProvider)
+        {
+            templater.AddServiceProvider(serviceProvider);
+            return this;
+        }
+
+        /// <summary>
         /// Fluent add-service with contract and implementation
         /// </summary>
         /// <typeparam name="TContract"></typeparam>
@@ -132,9 +143,8 @@ namespace BlazorTemplater
             return this;
         }
 
-        #endregion
+        #endregion Layout
 
- 
         /// <summary>
         /// Render the component to HTML
         /// </summary>
