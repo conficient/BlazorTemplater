@@ -3,19 +3,15 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
     <RazorLangVersion>3.0</RazorLangVersion>
-    <Authors>PhotoAtomic</Authors>
-    <Company>PhotoAtomic</Company>
-    <Description>A HTML templating engine using Razor Components (.razor) files instead of .cshtml
-This is a Pull request for a new feature of the BlazorTemplater
-https://github.com/conficient/BlazorTemplater/pull/26
-while waiting for the merge</Description>
-    <PackageProjectUrl>https://github.com/PhotoAtomic/BlazorTemplater</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/PhotoAtomic/BlazorTemplater</RepositoryUrl>
+    <Authors>conficient, PhotoAtomic</Authors>
+    <Company>conficient</Company>
+    <Description>A HTML templating engine using Razor Components (.razor) files instead of .cshtml</Description>
+    <PackageProjectUrl>https://github.com/conficient/BlazorTemplater</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/conficient/BlazorTemplater</RepositoryUrl>
     <PackageTags>Blazor RazorComponents HTML Email Templating</PackageTags>
-    <Version>1.4.1-PR.26</Version>
+    <Version>1.5.0</Version>
     <PackageReleaseNotes>Added ability to inject an entire IServiceProvider</PackageReleaseNotes>
     <LangVersion>Latest</LangVersion>
-    <PackageId>PhotoAtomic.$(AssemblyName)</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +19,6 @@ while waiting for the merge</Description>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.14" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.5" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.5" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
-    
   </ItemGroup>
 
 </Project>
