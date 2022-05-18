@@ -10,9 +10,8 @@ namespace BlazorTemplater.ServiceProviderComposition
     /// </summary>
     internal class ComposingServiceProvider : IServiceProvider, IDisposable
     {
-        private IServiceProvider _coreServiceProvider;
-        private IEnumerable<IServiceScope> _scopes;
-
+        private readonly IServiceProvider _coreServiceProvider;
+        private readonly IEnumerable<IServiceScope> _scopes;
 
         /// <summary>
         /// Creates a composing service provider
@@ -21,12 +20,14 @@ namespace BlazorTemplater.ServiceProviderComposition
         /// <param name="scopes">a series of additional service scope to use une after other to perform additional resolutions</param>
         public ComposingServiceProvider(IServiceProvider coreServiceProvider, IEnumerable<IServiceScope> scopes)
         {
-            _coreServiceProvider = coreServiceProvider;                      
-            _scopes = new List<IServiceScope>(scopes);  //force enumeration so to not need to re-execute the enumerator each time later in the foreach of GetService
-            //HINT: NOTE: do not use scopes.ToList() but use new List<IServiceScope>(scopes) instead because .ToList will not work as the real implementation of "scope"
-            //is an object that implments both IEnumerable<IServiceDescriptor> and IEnumerable<IServiceScope> 
-            //the .ToList will default to the IEnumerable<IServiceScope>.GetEnumerator and will result in copying nothing.
-            //instead the new List<IServiceScope> will use the correct override of the GetEnumerator to extract the elements
+            _coreServiceProvider = coreServiceProvider;
+            _scopes = new List<IServiceScope>(scopes);
+            // Force enumeration so to not need to re-execute the enumerator each time later in the foreach of GetService
+            // HINT: NOTE: do not use scopes.ToList() but use new List<IServiceScope>(scopes) instead because .ToList will not
+            // work as the real implementation of "scope" is an object that implments both IEnumerable<IServiceDescriptor>
+            // and IEnumerable<IServiceScope> the .ToList will default to the IEnumerable<IServiceScope>.GetEnumerator and
+            // will result in copying nothing. Instead the new List<IServiceScope> will use the correct override of the
+            // GetEnumerator to extract the elements
         }
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace BlazorTemplater.ServiceProviderComposition
             foreach (var scope in _scopes)
             {
                 if (scope.ServiceProvider.GetService(serviceType) is object serviceFromScope) return serviceFromScope;
-            }            
+            }
 
             return null;
         }

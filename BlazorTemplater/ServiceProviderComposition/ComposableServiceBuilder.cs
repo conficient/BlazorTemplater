@@ -28,7 +28,10 @@ namespace BlazorTemplater.ServiceProviderComposition
         /// <summary>
         /// build a new service provider
         /// </summary>
-        /// <returns>the returned service provider is the coreServiceProvider if no composingProviders are passed in the constructor, otherwise a ComposingServiceProvider for all the service providers and scopes will be created </returns>
+        /// <returns>
+        /// The returned service provider is the coreServiceProvider if no composingProviders are passed in the constructor,
+        /// otherwise a ComposingServiceProvider for all the service providers and scopes will be created
+        /// </returns>
         public IServiceProvider Build()
         {
             if (composingProviders is IEnumerable<IServiceProvider> composingServiceProviders)

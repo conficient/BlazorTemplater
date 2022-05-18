@@ -18,10 +18,14 @@ namespace BlazorTemplater.ServiceProviderComposition
         /// Allows to add an existing service provider to the the reslution ability of the current service collection
         /// </summary>
         /// <remarks>Composed service providers are queryed in the order they are added</remarks>
-        /// <param name="item">An additional service provider to use to resolve services, all the services from the composed service provider will be available for the resolution</param>
+        /// <param name="item">
+        /// An additional service provider to use to resolve services, all the services from the composed
+        /// service provider will be available for the resolution
+        /// </param>
         public void Add(IServiceProvider item)
         {
-            _serviceProvider.Add(item);
+            if (!Contains(item))
+                _serviceProvider.Add(item);
         }
 
         /// <summary>

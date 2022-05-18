@@ -7,11 +7,10 @@ using System.Text;
 namespace BlazorTemplater.ServiceProviderComposition
 {
     /// <summary>
-    /// provides a way to create a service provider able to use other service provider, if the service collection is also an IEnumerable<IServiceProvider> 
+    /// provides a way to create a service provider able to use other service provider, if the service collection is also an IEnumerable<IServiceProvider>
     /// </summary>
     internal class ComposableServiceProviderFactory : IServiceProviderFactory<ComposableServiceBuilder>
     {
-
         /// <summary>
         /// create a builder for a service collection
         /// </summary>
@@ -26,7 +25,7 @@ namespace BlazorTemplater.ServiceProviderComposition
             }
             return new(coreServiceProvider);
         }
-        
+
         /// <summary>
         /// produces a service provider  for the composable service builder
         /// </summary>
