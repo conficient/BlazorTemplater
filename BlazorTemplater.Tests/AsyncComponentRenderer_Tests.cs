@@ -1,4 +1,6 @@
-﻿using BlazorTemplater.Library;
+﻿#nullable enable
+
+using BlazorTemplater.Library;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,7 +36,7 @@ namespace BlazorTemplater.Tests
         {
             const string expected = @"<b>Jan 1st is 2021-01-01</b>";
             var actual = await CreateRenderer<Simple>()
-                .RenderAsync(new Dictionary<string, object>());
+                .RenderAsync(new Dictionary<string, object?>());
 
             Console.WriteLine(actual);
             Assert.AreEqual(expected, actual);
@@ -59,7 +61,7 @@ namespace BlazorTemplater.Tests
                 Description = "is awesome"
             };
 
-            var parameters = new Dictionary<string, object>
+            var parameters = new Dictionary<string, object?>
             {
                 { nameof(Parameters.Model), model },
             };
@@ -89,7 +91,7 @@ namespace BlazorTemplater.Tests
                 Description = "are awesome too"
             };
 
-            var parameters = new Dictionary<string, object>
+            var parameters = new Dictionary<string, object?>
             {
                 { nameof(Parameters.Model), model },
             };
@@ -114,7 +116,7 @@ namespace BlazorTemplater.Tests
             const string expected = "<p>No model!</p>";
 
             var html = await CreateRenderer<Parameters>()
-                .RenderAsync(new Dictionary<string, object>());
+                .RenderAsync(new Dictionary<string, object?>());
 
             // trim leading space and trailing CRLF from output
             var actual = html.Trim();
@@ -138,7 +140,7 @@ namespace BlazorTemplater.Tests
             // we should get a NullReferenceException thrown as Model parameter is not set
             Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
             {
-                _ = await CreateRenderer<ErrorTest>().RenderAsync(new Dictionary<string, object>());
+                _ = await CreateRenderer<ErrorTest>().RenderAsync(new Dictionary<string, object?>());
             });
         }
 
@@ -163,7 +165,7 @@ namespace BlazorTemplater.Tests
             var factory = new AsyncComponentRendererFactory<ServiceInjection>(serviceProvider, loggerFactory);
             var renderer = factory.CreateRenderer();
 
-            var parameters = new Dictionary<string, object>()
+            var parameters = new Dictionary<string, object?>()
             {
                 { nameof(ServiceInjection.A), a },
                 { nameof(ServiceInjection.B), b },
@@ -192,7 +194,7 @@ namespace BlazorTemplater.Tests
             var factory = new AsyncComponentRendererFactory<ServiceInjection>(serviceProvider, loggerFactory);
             var renderer = factory.CreateRenderer();
 
-            var parameters = new Dictionary<string, object>()
+            var parameters = new Dictionary<string, object?>()
             {
                 { nameof(ServiceInjection.A), a },
                 { nameof(ServiceInjection.B), b },
@@ -225,7 +227,7 @@ namespace BlazorTemplater.Tests
                 Description = "is cool"
             };
 
-            var parameters = new Dictionary<string, object>()
+            var parameters = new Dictionary<string, object?>()
             {
                 { nameof(NestedComponents.Model), model },
             };
@@ -250,7 +252,7 @@ namespace BlazorTemplater.Tests
             const string expected = "<p>The name is Bill</p>";
             var info = new CascadeInfo() { Name = "Bill" };
 
-            var parameters = new Dictionary<string, object>
+            var parameters = new Dictionary<string, object?>
             {
                 { nameof(CascadeParent.Info), info },
             };
@@ -280,7 +282,7 @@ namespace BlazorTemplater.Tests
             // this text appears in the content:
             const string expectedContent = "<p>Name = Test!</p>";
 
-            var parameters = new Dictionary<string, object>()
+            var parameters = new Dictionary<string, object?>()
             {
                 { nameof(LayoutComponent.Name), "Test!" },
             };
