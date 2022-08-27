@@ -1,18 +1,22 @@
-﻿#pragma warning disable BL0006
+﻿#nullable enable
+
+#pragma warning disable BL0006
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BlazorTemplater
 {
-    public class AsyncComponentRenderer<TComponent> : Renderer
-        where TComponent : IComponent, new()
+    public class AsyncComponentRenderer : Renderer
     {
         private static readonly HtmlEncoder _htmlEncoder = HtmlEncoder.Default;
 
@@ -21,34 +25,64 @@ namespace BlazorTemplater
             "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr",
         };
 
+        private readonly int _rootComponentId;
         private readonly Dispatcher _dispatcher;
-        private readonly StringBuilder _sb;
+        private readonly SemaphoreSlim _semaphoreSlim;
 
         private Exception? _exception;
-        private string? _closestSelectValue;
 
-        public AsyncComponentRenderer(IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
+        public AsyncComponentRenderer(IComponent component, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
             : base(serviceProvider, loggerFactory)
         {
+            _rootComponentId = AssignRootComponentId(component);
             _dispatcher = Dispatcher.CreateDefault();
-            _sb = new StringBuilder();
+            _semaphoreSlim = new SemaphoreSlim(1, 1);
         }
+
+#if NET5_0_OR_GREATER
+        public AsyncComponentRenderer(IComponent component, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IComponentActivator componentActivator)
+            : base(serviceProvider, loggerFactory, componentActivator)
+        {
+            _rootComponentId = AssignRootComponentId(component);
+            _dispatcher = Dispatcher.CreateDefault();
+            _semaphoreSlim = new SemaphoreSlim(1, 1);
+        }
+#endif
 
         public override Dispatcher Dispatcher => _dispatcher;
 
         public async Task<string> RenderAsync(IDictionary<string, object> parameters)
         {
-            var component = new TComponent();
-            var componentId = AssignRootComponentId(component);
+            var sb = new StringBuilder();
+            var writer = new StringWriter(sb);
 
-            await Dispatcher.InvokeAsync(() => RenderRootComponentAsync(componentId, ParameterView.FromDictionary(parameters)));
+            await RenderAsync(parameters, writer);
 
-            if (_exception is not null)
+            return sb.ToString();
+        }
+
+        public async Task RenderAsync(IDictionary<string, object> parameters, TextWriter textWriter)
+        {
+            await _semaphoreSlim.WaitAsync();
+            try
             {
-                throw _exception;
-            }
+                _exception = null;
 
-            return GetHtml(componentId);
+                await Dispatcher.InvokeAsync(() => RenderRootComponentAsync(_rootComponentId, ParameterView.FromDictionary(parameters)));
+
+                if (_exception is not null)
+                {
+                    ExceptionDispatchInfo.Capture(_exception).Throw();
+                }
+
+                var context = new AsyncComponentRendererContext(textWriter);
+
+                RenderHtml(context, _rootComponentId);
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
         }
 
         protected override void HandleException(Exception exception)
@@ -61,26 +95,24 @@ namespace BlazorTemplater
             return Task.CompletedTask;
         }
 
-        private string GetHtml(int componentId)
+        private void RenderHtml(AsyncComponentRendererContext context, int componentId)
         {
             var frames = GetCurrentRenderTreeFrames(componentId);
-            RenderFrames(frames);
-
-            return _sb.ToString();
+            RenderFrames(context, frames);
         }
 
-        private int RenderFrames(ArrayRange<RenderTreeFrame> frames)
+        private int RenderFrames(AsyncComponentRendererContext context, ArrayRange<RenderTreeFrame> frames)
         {
-            return RenderFrames(frames, 0, frames.Count);
+            return RenderFrames(context, frames, 0, frames.Count);
         }
 
-        private int RenderFrames(ArrayRange<RenderTreeFrame> frames, int position, int maxElements)
+        private int RenderFrames(AsyncComponentRendererContext context, ArrayRange<RenderTreeFrame> frames, int position, int maxElements)
         {
             var nextPosition = position;
             var endPosition = position + maxElements;
             while (position < endPosition)
             {
-                nextPosition = RenderCore(frames, position);
+                nextPosition = RenderCore(context, frames, position);
                 if (position == nextPosition)
                 {
                     throw new InvalidOperationException("We didn't consume any input.");
@@ -92,30 +124,30 @@ namespace BlazorTemplater
             return nextPosition;
         }
 
-        private int RenderCore(ArrayRange<RenderTreeFrame> frames, int position)
+        private int RenderCore(AsyncComponentRendererContext context, ArrayRange<RenderTreeFrame> frames, int position)
         {
             ref var frame = ref frames.Array[position];
             switch (frame.FrameType)
             {
                 case RenderTreeFrameType.Element:
-                    return RenderElement(frames, position);
+                    return RenderElement(context, frames, position);
 
                 case RenderTreeFrameType.Attribute:
                     throw new InvalidOperationException($"Attributes should only be encountered within {nameof(RenderElement)}");
 
                 case RenderTreeFrameType.Text:
-                    _sb.Append(_htmlEncoder.Encode(frame.TextContent));
+                    context.TextWriter.Write(_htmlEncoder.Encode(frame.TextContent));
                     return ++position;
 
                 case RenderTreeFrameType.Markup:
-                    _sb.Append(frame.MarkupContent);
+                    context.TextWriter.Write(frame.MarkupContent);
                     return ++position;
 
                 case RenderTreeFrameType.Component:
-                    return RenderChildComponent(frames, position);
+                    return RenderChildComponent(context, frames, position);
 
                 case RenderTreeFrameType.Region:
-                    return RenderFrames(frames, position + 1, frame.RegionSubtreeLength - 1);
+                    return RenderFrames(context, frames, position + 1, frame.RegionSubtreeLength - 1);
 
                 case RenderTreeFrameType.ElementReferenceCapture:
                 case RenderTreeFrameType.ComponentReferenceCapture:
@@ -126,54 +158,54 @@ namespace BlazorTemplater
             }
         }
 
-        private int RenderChildComponent(ArrayRange<RenderTreeFrame> frames, int position)
+        private int RenderChildComponent(AsyncComponentRendererContext context, ArrayRange<RenderTreeFrame> frames, int position)
         {
             ref var frame = ref frames.Array[position];
             var childFrames = GetCurrentRenderTreeFrames(frame.ComponentId);
-            RenderFrames(childFrames);
+            RenderFrames(context, childFrames);
             return position + frame.ComponentSubtreeLength;
         }
 
-        private int RenderElement(ArrayRange<RenderTreeFrame> frames, int position)
+        private int RenderElement(AsyncComponentRendererContext context, ArrayRange<RenderTreeFrame> frames, int position)
         {
             ref var frame = ref frames.Array[position];
-            _sb.Append('<');
-            _sb.Append(frame.ElementName);
-            var afterAttributes = RenderAttributes(frames, position + 1, frame.ElementSubtreeLength - 1, out var capturedValueAttribute);
+            context.TextWriter.Write('<');
+            context.TextWriter.Write(frame.ElementName);
+            var afterAttributes = RenderAttributes(context, frames, position + 1, frame.ElementSubtreeLength - 1, out var capturedValueAttribute);
 
             // When we see an <option> as a descendant of a <select>, and the option's "value" attribute matches the
             // "value" attribute on the <select>, then we auto-add the "selected" attribute to that option. This is
             // a way of converting Blazor's select binding feature to regular static HTML.
-            if (_closestSelectValue != null
+            if (context.ClosestSelectValue != null
                 && string.Equals(frame.ElementName, "option", StringComparison.OrdinalIgnoreCase)
-                && string.Equals(capturedValueAttribute, _closestSelectValue, StringComparison.Ordinal))
+                && string.Equals(capturedValueAttribute, context.ClosestSelectValue, StringComparison.Ordinal))
             {
-                _sb.Append(" selected");
+                context.TextWriter.Write(" selected");
             }
 
             var remainingElements = frame.ElementSubtreeLength + position - afterAttributes;
             if (remainingElements > 0)
             {
-                _sb.Append('>');
+                context.TextWriter.Write('>');
 
                 var isSelect = string.Equals(frame.ElementName, "select", StringComparison.OrdinalIgnoreCase);
                 if (isSelect)
                 {
-                    _closestSelectValue = capturedValueAttribute;
+                    context.ClosestSelectValue = capturedValueAttribute;
                 }
 
-                var afterElement = RenderChildren(frames, afterAttributes, remainingElements);
+                var afterElement = RenderChildren(context, frames, afterAttributes, remainingElements);
 
                 if (isSelect)
                 {
                     // There's no concept of nested <select> elements, so as soon as we're exiting one of them,
                     // we can safely say there is no longer any value for this
-                    _closestSelectValue = null;
+                    context.ClosestSelectValue = null;
                 }
 
-                _sb.Append("</");
-                _sb.Append(frame.ElementName);
-                _sb.Append('>');
+                context.TextWriter.Write("</");
+                context.TextWriter.Write(frame.ElementName);
+                context.TextWriter.Write('>');
 
                 return afterElement;
             }
@@ -181,31 +213,31 @@ namespace BlazorTemplater
             {
                 if (_selfClosingElements.Contains(frame.ElementName))
                 {
-                    _sb.Append(" />");
+                    context.TextWriter.Write(" />");
                 }
                 else
                 {
-                    _sb.Append('>');
-                    _sb.Append("</");
-                    _sb.Append(frame.ElementName);
-                    _sb.Append('>');
+                    context.TextWriter.Write('>');
+                    context.TextWriter.Write("</");
+                    context.TextWriter.Write(frame.ElementName);
+                    context.TextWriter.Write('>');
                 }
 
                 return afterAttributes;
             }
         }
 
-        private int RenderChildren(ArrayRange<RenderTreeFrame> frames, int position, int maxElements)
+        private int RenderChildren(AsyncComponentRendererContext context, ArrayRange<RenderTreeFrame> frames, int position, int maxElements)
         {
             if (maxElements == 0)
             {
                 return position;
             }
 
-            return RenderFrames(frames, position, maxElements);
+            return RenderFrames(context, frames, position, maxElements);
         }
 
-        private int RenderAttributes(ArrayRange<RenderTreeFrame> frames, int position, int maxElements, out string? capturedValueAttribute)
+        private int RenderAttributes(AsyncComponentRendererContext context, ArrayRange<RenderTreeFrame> frames, int position, int maxElements, out string? capturedValueAttribute)
         {
             capturedValueAttribute = null;
 
@@ -230,28 +262,28 @@ namespace BlazorTemplater
 
                 if (frame.AttributeEventHandlerId > 0)
                 {
-                    _sb.Append(' ');
-                    _sb.Append(frame.AttributeName);
-                    _sb.Append("=\"");
-                    _sb.Append(frame.AttributeEventHandlerId);
-                    _sb.Append('"');
+                    context.TextWriter.Write(' ');
+                    context.TextWriter.Write(frame.AttributeName);
+                    context.TextWriter.Write("=\"");
+                    context.TextWriter.Write(frame.AttributeEventHandlerId);
+                    context.TextWriter.Write('"');
                     continue;
                 }
 
                 switch (frame.AttributeValue)
                 {
                     case bool flag when flag:
-                        _sb.Append(' ');
-                        _sb.Append(frame.AttributeName);
+                        context.TextWriter.Write(' ');
+                        context.TextWriter.Write(frame.AttributeName);
                         break;
 
                     case string value:
-                        _sb.Append(' ');
-                        _sb.Append(frame.AttributeName);
-                        _sb.Append('=');
-                        _sb.Append('"');
-                        _sb.Append(_htmlEncoder.Encode(value));
-                        _sb.Append('"');
+                        context.TextWriter.Write(' ');
+                        context.TextWriter.Write(frame.AttributeName);
+                        context.TextWriter.Write('=');
+                        context.TextWriter.Write('"');
+                        context.TextWriter.Write(_htmlEncoder.Encode(value));
+                        context.TextWriter.Write('"');
                         break;
 
                     default:
