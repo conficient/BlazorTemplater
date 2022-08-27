@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BlazorTemplater.Tests
@@ -133,12 +134,12 @@ namespace BlazorTemplater.Tests
         /// Test rendering model with error (null reference is expected)
         /// </summary>
         [TestMethod]
-        public void ComponentRenderer_Error_Test()
+        public async Task ComponentRenderer_Error_Test()
         {
             var templater = new Templater();
 
             // we should get a NullReferenceException thrown as Model parameter is not set
-            Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
+            await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
             {
                 _ = await CreateRenderer<ErrorTest>().RenderAsync(new Dictionary<string, object?>());
             });
@@ -302,17 +303,14 @@ namespace BlazorTemplater.Tests
         [TestMethod]
         public async Task UseLayoutT_Test()
         {
-            throw new NotImplementedException();
-
             // this text appears in the layout:
             const string expectedTemplate = "<title>Layout2</title>";
             // this text appears in the content:
             const string expectedContent = @"<b>Jan 1st is 2021-01-01</b>";
 
             // render a component that has no layout
-            var html = new ComponentRenderer<Simple>()
-                .UseLayout<Layout2>()   // set the layout
-                .Render();
+            var html = await CreateRenderer<Simple, Layout2>()
+                .RenderAsync(new Dictionary<string, object?>());
 
             Console.WriteLine(html);
 
@@ -326,8 +324,6 @@ namespace BlazorTemplater.Tests
         [TestMethod]
         public async Task UseLayout_Test()
         {
-            throw new NotImplementedException();
-
             // this text appears in the layout:
             const string expectedTemplate = "<title>LayoutFile</title>";
             // this text appears in the content:
@@ -337,9 +333,8 @@ namespace BlazorTemplater.Tests
             var layout = typeof(LayoutFile);
 
             // render a component that has no layout
-            var html = new ComponentRenderer<Simple>()
-                .UseLayout(layout)   // set the layout
-                .Render();
+            var html = await CreateRenderer<Simple>(layout)
+                .RenderAsync(new Dictionary<string, object?>());
 
             Console.WriteLine(html);
 
@@ -358,31 +353,89 @@ namespace BlazorTemplater.Tests
         [TestMethod]
         public async Task UseLayout_ThrowsIfTypeInvalid()
         {
-            throw new NotImplementedException();
-
             // NOT a layout type:
             var layout = typeof(Simple);
-
-            // render a component that has no layout
-            var cr = new ComponentRenderer<Simple>();
 
             Assert.ThrowsException<ArgumentException>(() =>
             {
                 // try to set the layout
-                cr.UseLayout(layout);
+                var renderer = CreateRenderer<Simple>(layout);
             });
+        }
+
+        [TestMethod]
+        public async Task UseLayout_TestMultipleRenders()
+        {
+            // this text appears in the layout:
+            const string expectedTemplate = "<title>LayoutFile</title>";
+            // this text appears in the content:
+            const string expectedContent1 = "<p>Steve Sanderson is awesome!</p>";
+            const string expectedContent2 = "<p>Safia &amp; Pranav are awesome too!</p>";
+
+            var model1 = new TestModel()
+            {
+                Name = "Steve Sanderson",
+                Description = "is awesome"
+            };
+
+            var parameters1 = new Dictionary<string, object?>
+            {
+                { nameof(ParametersSet.Model), model1 },
+            };
+
+            var model2 = new TestModel()
+            {
+                Name = "Safia & Pranav",    // the text here is HTML encoded
+                Description = "are awesome too"
+            };
+
+            var parameters2 = new Dictionary<string, object?>
+            {
+                { nameof(ParametersSet.Model), model2 },
+            };
+
+            var renderer = CreateRenderer<ParametersSet, LayoutFile>();
+
+            var html1 = await renderer.RenderAsync(parameters1);
+            var html2 = await renderer.RenderAsync(parameters2);
+
+            Console.WriteLine(html1);
+            Console.WriteLine(html2);
+
+            StringAssert.Contains(html1, expectedTemplate, "Expected template was not found");
+            StringAssert.Matches(html1, new Regex(expectedContent1), "Expected content was not found");
+            StringAssert.DoesNotMatch(html1, new Regex(expectedContent2), "Expected content was not found");
+
+            StringAssert.Contains(html2, expectedTemplate, "Expected template was not found");
+            StringAssert.Matches(html2, new Regex(expectedContent1), "Expected content was not found");
+            StringAssert.Matches(html2, new Regex(expectedContent2), "Expected content was not found");
         }
 
         #endregion
 
-        private static AsyncComponentRenderer CreateRenderer<TComponent>()
+        private static AsyncComponentRenderer CreateRenderer<TComponent>(Type? layoutType = null)
             where TComponent : IComponent, new()
         {
             var serviceCollection = new ServiceCollection();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var loggerFactory = NullLoggerFactory.Instance;
 
-            var factory = new AsyncComponentRendererFactory<TComponent>(serviceProvider, loggerFactory);
+            var factory = layoutType is null 
+                ? (IAsyncComponentRendererFactory)new AsyncComponentRendererFactory<TComponent>(serviceProvider, loggerFactory)
+                : new AsyncComponentRendererFactory(typeof(TComponent), layoutType, serviceProvider, loggerFactory);
+
+            return factory.CreateRenderer();
+        }
+
+        private static AsyncComponentRenderer CreateRenderer<TComponent, TLayout>()
+            where TComponent : IComponent, new()
+            where TLayout : LayoutComponentBase
+        {
+            var serviceCollection = new ServiceCollection();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var loggerFactory = NullLoggerFactory.Instance;
+
+            var factory = new AsyncComponentRendererFactory<TComponent, TLayout>(serviceProvider, loggerFactory);
             return factory.CreateRenderer();
         }
 

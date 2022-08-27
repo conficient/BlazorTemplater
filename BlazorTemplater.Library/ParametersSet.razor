@@ -1,0 +1,16 @@
+﻿@foreach (var model in history)
+{
+    <p>@model.Name @model.Description!</p>
+}
+
+@code
+{
+    private List<TestModel> history = new List<TestModel>();
+
+    [Parameter] public TestModel Model { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        history.Add(Model);
+    }
+}
