@@ -25,25 +25,28 @@ namespace BlazorTemplater
             "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr",
         };
 
+        private readonly Type _componentType;
         private readonly int _rootComponentId;
         private readonly Dispatcher _dispatcher;
         private readonly SemaphoreSlim _semaphoreSlim;
 
         private Exception? _exception;
 
-        public AsyncComponentRenderer(IComponent component, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
+        public AsyncComponentRenderer(Type componentType, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
             : base(serviceProvider, loggerFactory)
         {
-            _rootComponentId = AssignRootComponentId(component);
+            _componentType = componentType;
+            _rootComponentId = AssignRootComponentId(new LayoutView());
             _dispatcher = Dispatcher.CreateDefault();
             _semaphoreSlim = new SemaphoreSlim(1, 1);
         }
 
 #if NET5_0_OR_GREATER
-        public AsyncComponentRenderer(IComponent component, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IComponentActivator componentActivator)
+        public AsyncComponentRenderer(Type componentType, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IComponentActivator componentActivator)
             : base(serviceProvider, loggerFactory, componentActivator)
         {
-            _rootComponentId = AssignRootComponentId(component);
+            _componentType = componentType;
+            _rootComponentId = AssignRootComponentId(new LayoutView());
             _dispatcher = Dispatcher.CreateDefault();
             _semaphoreSlim = new SemaphoreSlim(1, 1);
         }
@@ -63,12 +66,29 @@ namespace BlazorTemplater
 
         public async Task RenderAsync(IDictionary<string, object?> parameters, TextWriter textWriter)
         {
+            RenderFragment childContent = builder =>
+            {
+                builder.OpenComponent(0, _componentType);
+
+                if (parameters is not null)
+                {
+                    builder.AddMultipleAttributes(1, parameters);
+                }
+
+                builder.CloseComponent();
+            };
+
+            var layoutParameters = new Dictionary<string, object?>()
+            {
+                { nameof(LayoutView.ChildContent), childContent },
+            };
+
             await _semaphoreSlim.WaitAsync();
             try
             {
                 _exception = null;
 
-                await Dispatcher.InvokeAsync(() => RenderRootComponentAsync(_rootComponentId, ParameterView.FromDictionary(parameters)));
+                await Dispatcher.InvokeAsync(() => RenderRootComponentAsync(_rootComponentId, ParameterView.FromDictionary(layoutParameters)));
 
                 if (_exception is not null)
                 {
