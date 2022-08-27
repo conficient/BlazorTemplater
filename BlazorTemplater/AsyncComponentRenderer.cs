@@ -58,6 +58,30 @@ namespace BlazorTemplater
             };
         }
 
+        public AsyncComponentRenderer(Type componentType, Type? layoutType, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
+            : base(serviceProvider, loggerFactory)
+        {
+            ValidateTypes(componentType, layoutType);
+
+            _componentType = componentType;
+            _rootComponentId = AssignRootComponentId(new LayoutView());
+            _dispatcher = Dispatcher.CreateDefault();
+            _semaphoreSlim = new SemaphoreSlim(1, 1);
+
+            RenderFragment childContent = builder =>
+            {
+                builder.OpenComponent(0, _componentType);
+                builder.AddMultipleAttributes(1, _componentParameters);
+                builder.CloseComponent();
+            };
+            
+            _layoutParameters = new Dictionary<string, object?>()
+            {
+                { nameof(LayoutView.ChildContent), childContent },
+                { nameof(LayoutView.Layout), layoutType ?? Templater.GetLayoutFromAttribute(_componentType) },
+            };
+        }
+
 #if NET5_0_OR_GREATER
         public AsyncComponentRenderer(Type componentType, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IComponentActivator componentActivator)
             : base(serviceProvider, loggerFactory, componentActivator)
@@ -80,6 +104,30 @@ namespace BlazorTemplater
             {
                 { nameof(LayoutView.ChildContent), childContent },
                 { nameof(LayoutView.Layout), Templater.GetLayoutFromAttribute(_componentType) },
+            };
+        }
+
+        public AsyncComponentRenderer(Type componentType, Type? layoutType, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IComponentActivator componentActivator)
+            : base(serviceProvider, loggerFactory, componentActivator)
+        {
+            ValidateTypes(componentType, layoutType);
+
+            _componentType = componentType;
+            _rootComponentId = AssignRootComponentId(new LayoutView());
+            _dispatcher = Dispatcher.CreateDefault();
+            _semaphoreSlim = new SemaphoreSlim(1, 1);
+
+            RenderFragment childContent = builder =>
+            {
+                builder.OpenComponent(0, _componentType);
+                builder.AddMultipleAttributes(1, _componentParameters);
+                builder.CloseComponent();
+            };
+            
+            _layoutParameters = new Dictionary<string, object?>()
+            {
+                { nameof(LayoutView.ChildContent), childContent },
+                { nameof(LayoutView.Layout), layoutType ?? Templater.GetLayoutFromAttribute(_componentType) },
             };
         }
 #endif
