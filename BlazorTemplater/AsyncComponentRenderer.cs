@@ -29,32 +29,64 @@ namespace BlazorTemplater
         private readonly int _rootComponentId;
         private readonly Dispatcher _dispatcher;
         private readonly SemaphoreSlim _semaphoreSlim;
+        private readonly IDictionary<string, object?> _layoutParameters;
 
         private Exception? _exception;
+        private IDictionary<string, object?> _componentParameters;
 
         public AsyncComponentRenderer(Type componentType, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
             : base(serviceProvider, loggerFactory)
         {
+            ValidateTypes(componentType, null);
+
             _componentType = componentType;
             _rootComponentId = AssignRootComponentId(new LayoutView());
             _dispatcher = Dispatcher.CreateDefault();
             _semaphoreSlim = new SemaphoreSlim(1, 1);
+
+            RenderFragment childContent = builder =>
+            {
+                builder.OpenComponent(0, _componentType);
+                builder.AddMultipleAttributes(1, _componentParameters);
+                builder.CloseComponent();
+            };
+            
+            _layoutParameters = new Dictionary<string, object?>()
+            {
+                { nameof(LayoutView.ChildContent), childContent },
+                { nameof(LayoutView.Layout), Templater.GetLayoutFromAttribute(_componentType) },
+            };
         }
 
 #if NET5_0_OR_GREATER
         public AsyncComponentRenderer(Type componentType, IServiceProvider serviceProvider, ILoggerFactory loggerFactory, IComponentActivator componentActivator)
             : base(serviceProvider, loggerFactory, componentActivator)
         {
+            ValidateTypes(componentType, null);
+
             _componentType = componentType;
             _rootComponentId = AssignRootComponentId(new LayoutView());
             _dispatcher = Dispatcher.CreateDefault();
             _semaphoreSlim = new SemaphoreSlim(1, 1);
+
+            RenderFragment childContent = builder =>
+            {
+                builder.OpenComponent(0, _componentType);
+                builder.AddMultipleAttributes(1, _componentParameters);
+                builder.CloseComponent();
+            };
+            
+            _layoutParameters = new Dictionary<string, object?>()
+            {
+                { nameof(LayoutView.ChildContent), childContent },
+                { nameof(LayoutView.Layout), Templater.GetLayoutFromAttribute(_componentType) },
+            };
         }
 #endif
 
         public override Dispatcher Dispatcher => _dispatcher;
 
-        public async Task<string> RenderAsync(IDictionary<string, object?> parameters)
+        public async Task<string> RenderAsync(IDictionary<string, object?>? parameters)
         {
             var sb = new StringBuilder();
             var writer = new StringWriter(sb);
@@ -64,31 +96,15 @@ namespace BlazorTemplater
             return sb.ToString();
         }
 
-        public async Task RenderAsync(IDictionary<string, object?> parameters, TextWriter textWriter)
+        public async Task RenderAsync(IDictionary<string, object?>? parameters, TextWriter textWriter)
         {
-            RenderFragment childContent = builder =>
-            {
-                builder.OpenComponent(0, _componentType);
-
-                if (parameters is not null)
-                {
-                    builder.AddMultipleAttributes(1, parameters);
-                }
-
-                builder.CloseComponent();
-            };
-
-            var layoutParameters = new Dictionary<string, object?>()
-            {
-                { nameof(LayoutView.ChildContent), childContent },
-            };
-
             await _semaphoreSlim.WaitAsync();
             try
             {
                 _exception = null;
+                _componentParameters = parameters ?? new Dictionary<string, object?>();
 
-                await Dispatcher.InvokeAsync(() => RenderRootComponentAsync(_rootComponentId, ParameterView.FromDictionary(layoutParameters)));
+                await Dispatcher.InvokeAsync(() => RenderRootComponentAsync(_rootComponentId, ParameterView.FromDictionary(_layoutParameters)));
 
                 if (_exception is not null)
                 {
@@ -113,6 +129,19 @@ namespace BlazorTemplater
         protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)
         {
             return Task.CompletedTask;
+        }
+
+        private static void ValidateTypes(Type componentType, Type? layoutType)
+        {
+            if (!typeof(IComponent).IsAssignableFrom(componentType))
+            {
+                throw new ArgumentException("Component type must implement IComponent.", nameof(componentType));
+            }
+            
+            if (layoutType is not null && !typeof(LayoutComponentBase).IsAssignableFrom(layoutType))
+            { 
+                throw new ArgumentException("Layout type must inherit from LayoutComponentBase.", nameof(layoutType));
+            }
         }
 
         private void RenderHtml(AsyncComponentRendererContext context, int componentId)
