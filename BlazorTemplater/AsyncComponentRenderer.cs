@@ -32,7 +32,7 @@ namespace BlazorTemplater
         private readonly IDictionary<string, object?> _layoutParameters;
 
         private Exception? _exception;
-        private IDictionary<string, object?> _componentParameters;
+        private IEnumerable<KeyValuePair<string, object?>> _componentParameters;
 
         public AsyncComponentRenderer(Type componentType, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
             : base(serviceProvider, loggerFactory)
@@ -134,7 +134,7 @@ namespace BlazorTemplater
 
         public override Dispatcher Dispatcher => _dispatcher;
 
-        public async Task<string> RenderAsync(IDictionary<string, object?>? parameters)
+        public async Task<string> RenderAsync(IEnumerable<KeyValuePair<string, object?>>? parameters)
         {
             var sb = new StringBuilder();
             var writer = new StringWriter(sb);
@@ -144,7 +144,7 @@ namespace BlazorTemplater
             return sb.ToString();
         }
 
-        public async Task RenderAsync(IDictionary<string, object?>? parameters, TextWriter textWriter)
+        public async Task RenderAsync(IEnumerable<KeyValuePair<string, object?>>? parameters, TextWriter textWriter)
         {
             await _semaphoreSlim.WaitAsync();
             try
