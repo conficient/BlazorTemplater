@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BlazorTemplater
 {
@@ -115,6 +116,21 @@ namespace BlazorTemplater
         }
 
         /// <summary>
+        /// Render a component to HTML waiting all the async lifecycle to complete
+        /// </summary>
+        /// <typeparam name="TComponent">The component type to render</typeparam>
+        /// <param name="parameters">Optional dictionary of parameters</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Updated version renders inside a LayoutView so that layouts are applied
+        /// </remarks>
+        public Task<string> RenderComponentAsync<TComponent>(IDictionary<string, object> parameters = null) where TComponent : IComponent
+        {
+            var componentType = typeof(TComponent);
+            return RenderComponentAsync(componentType, parameters);
+        }
+
+        /// <summary>
         /// Render a component to HTML (non-generic version)
         /// </summary>
         /// <param name="componentType">the Type of the component</param>
@@ -147,6 +163,43 @@ namespace BlazorTemplater
                 { nameof(LayoutView.ChildContent), childContent }
             };
             layoutView.SetParametersAndRender(GetParameterView(layoutParams));
+
+            return layoutView.GetMarkup();
+        }
+
+        /// <summary>
+        /// Render a component to HTML (non-generic version) it waits untill all the async life cycles are completed
+        /// </summary>
+        /// <param name="componentType">the Type of the component</param>
+        /// <param name="parameters">Optional dictionary of parameters</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This non-generic version can accept a Type
+        /// </remarks>
+        public async Task<string> RenderComponentAsync(Type componentType, IDictionary<string, object> parameters = null)
+        {
+            ValidateComponentType(componentType);
+            var layout = GetLayout(componentType);
+
+            // create a RenderFragment from the component
+            var childContent = (RenderFragment)(builder =>
+            {
+                builder.OpenComponent(0, componentType);
+
+                // add parameters if any
+                if (parameters != null && parameters.Any())
+                    builder.AddMultipleAttributes(1, parameters);
+                builder.CloseComponent();
+            });
+
+            // render a LayoutView and use the TComponent as the child content
+            var layoutView = new RenderedComponent<LayoutView>(Renderer);
+            var layoutParams = new Dictionary<string, object>()
+            {
+                { nameof(LayoutView.Layout), layout },
+                { nameof(LayoutView.ChildContent), childContent }
+            };
+            await layoutView.SetParametersAndRenderAsync(GetParameterView(layoutParams));
 
             return layoutView.GetMarkup();
         }

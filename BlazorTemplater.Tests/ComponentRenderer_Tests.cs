@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Threading.Tasks;
 
 namespace BlazorTemplater.Tests
 {
@@ -100,7 +101,7 @@ namespace BlazorTemplater.Tests
             // expected output
             const string expected = "<p>No model!</p>";
 
-            var html = new ComponentRenderer<Parameters>()
+            var html = new ComponentRenderer<Parameters>()                
                 .Render();
 
             // trim leading space and trailing CRLF from output
@@ -111,6 +112,24 @@ namespace BlazorTemplater.Tests
         }
 
         #endregion Parameters
+
+        #region Async render
+
+        /// <summary>
+        /// Test a async render, so the html is generated only after the async lifecycle is completed
+        /// </summary>
+        [TestMethod]
+        public async Task Async_Test()
+        {
+            const string expected = @"<h3>AsyncRender Text: Async value</h3>";
+            
+            var actual = await new ComponentRenderer<AsyncRender>().RenderAsync();
+
+            Console.WriteLine(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+        #endregion Async render
 
         #region Errors
 

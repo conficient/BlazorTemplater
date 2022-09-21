@@ -1,0 +1,12 @@
+﻿<h3>AsyncRender Text: @Text</h3>
+
+@code {
+    public string Text { get; set; } = "Original value";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        Text = "Async value";
+        await base.OnInitializedAsync();
+    }
+}

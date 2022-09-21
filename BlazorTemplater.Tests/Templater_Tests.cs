@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BlazorTemplater.Tests
 {
@@ -136,6 +137,26 @@ namespace BlazorTemplater.Tests
         }
 
         #endregion Parameters
+
+
+        #region Async render
+
+        /// <summary>
+        /// Test a async render, so the html is generated only after the async lifecycle is completed
+        /// </summary>
+        [TestMethod]
+        public async Task RenderComponent_Async_Test()
+        {
+            const string expected = @"<h3>AsyncRender Text: Async value</h3>";
+
+            var templater = new Templater();
+            var actual = await templater.RenderComponentAsync<AsyncRender>();
+
+            Console.WriteLine(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+        #endregion Async render
 
         #region Errors
 

@@ -71,5 +71,10 @@ namespace BlazorTemplater
                 ExceptionDispatchInfo.Capture(_unhandledException).Throw();
             }
         }
+
+        internal Task AwaitAllPendingTasks()
+        {
+            return NextRender;
+        }
     }
 }

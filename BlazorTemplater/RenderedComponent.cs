@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using System.Threading.Tasks;
 
 namespace BlazorTemplater
 {
@@ -32,6 +33,15 @@ namespace BlazorTemplater
         internal void SetParametersAndRender(ParameterView parameters)
         {
             _containerTestRootComponent.RenderComponentUnderTest(
+                typeof(TComponent), parameters);
+            var foundTestComponent = _containerTestRootComponent.FindComponentUnderTest();
+            _testComponentId = foundTestComponent.Item1;
+            _testComponentInstance = (TComponent)foundTestComponent.Item2;
+        }
+
+        internal async Task SetParametersAndRenderAsync(ParameterView parameters)
+        {
+            await _containerTestRootComponent.RenderComponentUnderTestAsync(
                 typeof(TComponent), parameters);
             var foundTestComponent = _containerTestRootComponent.FindComponentUnderTest();
             _testComponentId = foundTestComponent.Item1;
