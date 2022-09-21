@@ -72,6 +72,14 @@ namespace BlazorTemplater
                     builder.CloseComponent();
                 });
             });
+            
+        }
+
+        public Task RenderComponentUnderTestAsync(Type componentType, ParameterView parameters)
+        {
+            RenderComponentUnderTest(componentType, parameters);
+            return _renderer.AwaitAllPendingTasks();
+
         }
     }
 }

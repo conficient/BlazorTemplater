@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace BlazorTemplater
 {
@@ -153,6 +154,16 @@ namespace BlazorTemplater
         {
             // renders the component and returns the markup HTML
             return templater.RenderComponent<TComponent>(parameters);
+        }
+
+        /// <summary>
+        /// Render the component to HTML waiting all the async lifecycle to complete
+        /// </summary>
+        /// <returns></returns>
+        public Task<string> RenderAsync()
+        {
+            // renders the component and returns the markup HTML
+            return templater.RenderComponentAsync<TComponent>(parameters);
         }
     }
 }

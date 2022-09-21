@@ -205,4 +205,6 @@ This was never developed into a functioning product or library. For unit testing
 | v1.2.0   | Added multi-targetting for .NET Std/.NET 5 to fix bug [#12](https://github.com/conficient/BlazorTemplater/issues/12) |
 | v1.3.0   | Added `ComponentRenderer<T>` for fluent interface and typed parameter setting |
 | v1.4.0   | Added support for Layouts |
+| v1.5.0   | Added support already existing IServiceProvider |
+| v1.6.0   | Added support AsyncRender |
 
