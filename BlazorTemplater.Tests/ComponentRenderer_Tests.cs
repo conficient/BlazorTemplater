@@ -328,6 +328,28 @@ namespace BlazorTemplater.Tests
 
         #endregion
 
+        #region Comment test
+
+        /// <summary>
+        /// Render a component (no service injection or parameters)
+        /// </summary>
+        [TestMethod]
+        public void Comment_Test()
+        {
+            const string expected = @"<!--[if mso]-->";
+            const string notExpected = @"<!-- this will be removed -->";
+
+            var actual = new ComponentRenderer<CommentTest>()
+                .Render();
+
+            Console.WriteLine(actual);
+            // the MarkupString comment is retained
+            StringAssert.Contains(actual, expected);
+            // the comment without MarkupString is removed
+            Assert.IsFalse(actual.Contains(notExpected));
+        }
+
+        #endregion Simple render
     }
 
 }
