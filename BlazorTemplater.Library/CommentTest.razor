@@ -1,0 +1,16 @@
+﻿@* 
+  HTML Comments are normally removed by the component rendering code
+  They can be included using the MarkupString method, e.g.  
+*@
+@((MarkupString)"<!--[if mso]-->")
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td width="50%" valign="top">
+@((MarkupString)"<!--[endif]-->")
+            This component tests if comments are retained on render
+            <!-- this will be removed -->
+@((MarkupString)"<!--[if mso]-->")
+        </td>
+    </tr>
+</table>
+@((MarkupString)"<!--[endif]-->")
