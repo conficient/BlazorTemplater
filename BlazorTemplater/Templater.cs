@@ -5,7 +5,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace BlazorTemplater
 {
@@ -50,6 +53,11 @@ namespace BlazorTemplater
         /// Lazy ServiceProvider instance
         /// </summary>
         private readonly Lazy<IServiceProvider> _serviceProvider;
+
+        /// <summary>
+        /// Store the Scoped CSS. Css Isolated.
+        /// </summary>
+        private StringBuilder _style = null;
 
         /// <summary>
         /// Services provided by Dependency Injection
@@ -100,6 +108,48 @@ namespace BlazorTemplater
         }
 
         /// <summary>
+        /// Add additional isolated CSS from a nested components
+        /// </summary>
+        /// <typeparam name="TComponent"></typeparam>
+        public Templater AddScoppedCss<TComponent>()
+        {
+            Type type = typeof(TComponent);
+            AddScoppedCss(type);
+            return this;
+        }
+
+        private void AddScoppedCss(Type componentType)
+        {
+            if (componentType != null)
+            {
+                string cssFile = $@"{componentType.FullName}.razor.css";
+                StringBuilder css = new StringBuilder();
+                try
+                {
+                    Assembly assembly = componentType.Assembly;
+                    using Stream stream = assembly.GetManifestResourceStream(cssFile);
+                    using StreamReader sr = new StreamReader(stream!);
+                    string content = sr.ReadToEndAsync().GetAwaiter().GetResult();
+                    if (!string.IsNullOrEmpty(content))
+                    {
+                        css.Append(content);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Component = {componentType.Name} => Exception: {ex.Message}");
+                    css.Clear();
+                }
+                finally
+                {
+                    if (_style == null)
+                        _style = new();
+                    _style.Append(css);
+                }
+            }
+        }
+
+        /// <summary>
         /// Render a component to HTML
         /// </summary>
         /// <typeparam name="TComponent">The component type to render</typeparam>
@@ -127,17 +177,28 @@ namespace BlazorTemplater
         {
             ValidateComponentType(componentType);
             var layout = GetLayout(componentType);
+            AddScoppedCss(layout);
+            AddScoppedCss(componentType);
 
             // create a RenderFragment from the component
-            var childContent = (RenderFragment)(builder =>
+            RenderFragment childContent = builder =>
             {
-                builder.OpenComponent(0, componentType);
-
+                int componentId = 0;
+                if (_style != null && _style.Length > 0)
+                {
+                    builder.AddMarkupContent(componentId, $@"<style type=""text/css"">{_style}</style>");
+                    componentId++;
+                }
+                builder.OpenComponent(componentId, componentType);
                 // add parameters if any
                 if (parameters != null && parameters.Any())
-                    builder.AddMultipleAttributes(1, parameters);
+                {
+                    componentId++;
+                    builder.AddMultipleAttributes(componentId, parameters);
+                }
+                // add scoped css if any
                 builder.CloseComponent();
-            });
+            };
 
             // render a LayoutView and use the TComponent as the child content
             var layoutView = new RenderedComponent<LayoutView>(Renderer);

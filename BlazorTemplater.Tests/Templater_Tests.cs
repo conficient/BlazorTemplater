@@ -427,5 +427,111 @@ namespace BlazorTemplater.Tests
         }
 
         #endregion
+
+        #region Css Isolated
+        /// <summary>
+        /// Test a SimpleWithCss component with no parameters
+        /// </summary>
+        [TestMethod]
+        public void RenderComponent_SimpleWithCss_Test()
+        {
+            const string expected = @"<style type=""text/css"">p
+{
+    font-size: large;
+    color: darkblue;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+}</style><p>
+    <b>Jan 1st is 2021-01-01</b>
+</p>";
+
+            var templater = new Templater();
+            var actual = templater.RenderComponent<SimpleWithCss>();
+
+            Console.WriteLine(actual);
+            Assert.AreEqual(expected, actual);
+        } 
+
+        /// <summary>
+        /// Test a SimpleWithCss component with no parameters
+        /// </summary>
+        [TestMethod]
+        public void RenderComponent_TemplatedSimpleWithCss_Test()
+        {
+            const string expected = @"
+            <p>This is a layout component that should be rendered components!</p>
+            <div class=""content px-4"">
+                <style type=""text/css"">p {
+    font-size: large;
+    color: darkgreen;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+}p.child {
+    font-size: medium;
+    color: darkblue;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+}</style><p class=""child"">
+    <b>Jan 1st is 2021-01-01</b>
+</p>";
+
+            var templater = new Templater();
+            var actual = templater.RenderComponent<TemplatedSimpleWithCss>();
+
+            Console.WriteLine(actual);
+            StringAssert.Contains(actual, expected, "Content not found");
+        }  
+
+        /// <summary>
+        /// Test a SimpleWithCss component with no parameters
+        /// </summary>
+        [TestMethod]
+        public void RenderComponent_MultipleComponentsWithCss_Test()
+        {
+            const string expected = @"<p>This is a layout component that should be rendered components!</p>
+            <div class=""content px-4"">
+                <style type=""text/css"">.nested {
+    font-size: large;
+    color: darkblue;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+}
+
+.nested strong{
+    color: darkred;
+    font-style: italic;
+}p {
+    font-size: large;
+    color: darkgreen;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+}p
+{
+    font-size: large;
+    color: darkblue;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+}</style><p>
+    <b>Jan 1st is 2021-01-01</b>
+</p>
+<p class=""nested"">
+    This component has <strong>owned CSS</strong>
+</p>";
+
+            var templater = new Templater();
+            var actual = templater
+                .AddScoppedCss<ComponentWithCss>()
+                .RenderComponent<MultipleComponentsWithCss>();
+
+            Console.WriteLine(actual);
+            StringAssert.Contains(actual, expected, "Content not found");
+        }
+        #endregion Simple render
     }
 }

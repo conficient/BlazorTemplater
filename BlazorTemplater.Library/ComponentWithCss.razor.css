@@ -1,0 +1,12 @@
+﻿.nested {
+    font-size: large;
+    color: darkblue;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+}
+
+.nested strong{
+    color: darkred;
+    font-style: italic;
+}
